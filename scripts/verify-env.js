@@ -106,7 +106,7 @@ async function main() {
   if (healthData?.checks) {
     const { database, environment } = healthData.checks
     process.stdout.write('  [3/3] Database ping                        … ')
-    if (database === true) {
+    if (database === true || database === 'connected') {
       console.log(G('✅  PASS — Supabase connection pool responding'))
     } else {
       console.log(R(`✗  FAIL — ${database ?? 'no result'}`))
@@ -114,7 +114,7 @@ async function main() {
     }
 
     process.stdout.write('       Environment flags                    … ')
-    if (environment === true) {
+    if (environment === true || environment === 'validated') {
       console.log(G('✅  PASS — all required secrets present'))
     } else {
       console.log(R(`✗  FAIL — ${environment ?? 'missing keys'}`))
