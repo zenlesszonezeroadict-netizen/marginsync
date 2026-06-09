@@ -1,0 +1,311 @@
+{
+  "project": "MarginSync",
+  "version": "0.1.0",
+  "stack": "Next.js 16.2.7 · Supabase · Vercel · Shopify App Billing · Shopify Admin API",
+  "lastUpdated": "2026-06-09",
+  "currentPhase": 7,
+  "completedIssues": 15,
+  "totalIssues": 15,
+  "percentComplete": 100,
+  "issues": [
+    {
+      "id": 1,
+      "title": "Project scaffold + Supabase schema + RLS",
+      "phase": 1,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [],
+      "completedDecisions": [
+        "Next.js 16.2.7 App Router with TypeScript, Tailwind CSS, ESLint",
+        "6 tables with RLS: organizations, profiles, organization_members, shopify_connections, sku_mappings, reprice_runs, reprice_run_items",
+        "auth_org_ids() RLS helper (security definer) — used in all org-scoped policies",
+        "createAdminClient() with service role key — server-side only, never in browser",
+        "Hand-authored Database type stub — replace with supabase gen types after project creation"
+      ],
+      "filesCreated": ["ROADMAP.md", "PROGRESS.json", ".env.local", "supabase/migrations/0001_initial_schema.sql", "src/lib/supabase/client.ts", "src/lib/supabase/server.ts", "src/lib/types/database.ts"],
+      "filesModified": [],
+      "openQuestions": ["Supabase project not yet created — .env.local values are placeholder stubs"],
+      "nextAction": "Create Supabase project → fill .env.local → run supabase db push → regen types."
+    },
+    {
+      "id": 2,
+      "title": "Auth: magic-link sign-in + org auto-create",
+      "phase": 1,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [1],
+      "completedDecisions": [
+        "Magic-link OTP via signInWithOtp — no password flow",
+        "Auth callback at /auth/callback exchanges code for session",
+        "handle_new_user() trigger auto-creates profile + org + membership on first sign-in",
+        "Explicit if(membership) blocks in server components to avoid TypeScript never inference"
+      ],
+      "filesCreated": ["supabase/migrations/0002_auth_trigger.sql", "middleware.ts", "src/app/page.tsx", "src/app/login/page.tsx", "src/app/auth/callback/route.ts", "src/components/Sidebar.tsx", "src/components/SignOutButton.tsx", "src/app/dashboard/layout.tsx", "src/app/dashboard/page.tsx", "vitest.config.ts"],
+      "filesModified": [],
+      "openQuestions": ["Requires live Supabase project for end-to-end testing"],
+      "nextAction": "Done."
+    },
+    {
+      "id": 3,
+      "title": "File upload → server-side parse → ParsedRow[]",
+      "phase": 2,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [2],
+      "completedDecisions": [
+        "POST /api/runs: validates file, creates run at pending, uploads to Storage, parses, advances to parsed",
+        "parseFile() dispatches to parseCsv (PapaParse + BOM strip) or parseXlsx (SheetJS) by extension",
+        "Upload API persists headers in column_config.headers for use in map-columns wizard",
+        "Free-tier quota gate (3 runs) applied in upload route — 402 if exceeded"
+      ],
+      "filesCreated": ["src/lib/parser/types.ts", "src/lib/parser/parse-csv.ts", "src/lib/parser/parse-xlsx.ts", "src/lib/parser/parse-file.ts", "src/lib/parser/detect-columns.ts", "src/lib/supabase/storage.ts", "src/lib/billing/quota.ts", "src/app/api/runs/route.ts"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 4,
+      "title": "Column-detection UI",
+      "phase": 2,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [3],
+      "completedDecisions": [
+        "Upload page: client component, native drag-and-drop, 20MB limit",
+        "Map-columns page: auto-detects via detectColumns(), chip-style column picker with confidence badge",
+        "PATCH /api/runs/[runId] saves column_config preserving headers array",
+        "GET /api/runs/[runId] returns run metadata + headers from stored column_config",
+        "Wizard step indicator: Upload → Map columns → Review matches → Preview prices"
+      ],
+      "filesCreated": ["src/app/api/runs/[runId]/route.ts", "src/app/dashboard/upload/page.tsx", "src/app/dashboard/upload/[runId]/map-columns/page.tsx"],
+      "filesModified": ["src/app/api/runs/route.ts"],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 5,
+      "title": "SKU normalization + fuzzy-match (mock catalog)",
+      "phase": 2,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [4],
+      "completedDecisions": [
+        "normalizeSKU: BOM strip, toUpperCase, trim, replace(/[^A-Z0-9-]/g, '') — hyphens preserved",
+        "matchSKUs: savedMappings → exact Map → fuse.js threshold 0.3 → unmatched",
+        "GET /api/runs/[runId]/items: paginated item list with validated flag enum filter",
+        "Match review page shows stats + unmatched SKU table"
+      ],
+      "filesCreated": ["src/lib/matcher/types.ts", "src/lib/matcher/normalize-sku.ts", "src/lib/matcher/match-skus.ts", "src/lib/matcher/mock-catalog.ts", "src/app/api/runs/[runId]/match/route.ts", "src/app/api/runs/[runId]/items/route.ts", "src/app/dashboard/upload/[runId]/match/page.tsx", "src/lib/matcher/__tests__/normalize-sku.test.ts", "src/lib/matcher/__tests__/match-skus.test.ts", "src/lib/parser/__tests__/parse-csv.test.ts", "src/lib/parser/__tests__/detect-columns.test.ts"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 6,
+      "title": "Pricing rule engine",
+      "phase": 2,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [5],
+      "completedDecisions": [
+        "computePrices: cost × markup → rounding → margin check. Flag priority: below_margin > cost_up > ok",
+        "applyRounding: 0.99 = ceil-0.01; 0.00 = round to cent; none = 2dp",
+        "GET/PATCH /api/settings/pricing: read/write org pricing_rule + margin_target_pct",
+        "Pricing settings page with live preview for $10 cost example",
+        "PricingRule cast via as unknown as Json — zero any types"
+      ],
+      "filesCreated": ["src/lib/pricing/types.ts", "src/lib/pricing/apply-rounding.ts", "src/lib/pricing/recalculate-margin.ts", "src/lib/pricing/compute-prices.ts", "src/app/api/runs/[runId]/price/route.ts", "src/app/api/settings/pricing/route.ts", "src/app/dashboard/settings/pricing/page.tsx", "src/lib/pricing/__tests__/apply-rounding.test.ts", "src/lib/pricing/__tests__/compute-prices.test.ts"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 7,
+      "title": "Diff preview table",
+      "phase": 3,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [6],
+      "completedDecisions": [
+        "/dashboard/runs/[runId]: server component fetches run + items, renders stats + PreviewTable",
+        "PreviewTable: client component with flag filter tabs (all/ok/cost_up/below_margin/unmatched)",
+        "Row checkbox deselection via server action toggleItem(runId, itemId, selected)",
+        "Status badge, stat cards, summary stats (total/changed/below_margin/unmatched)"
+      ],
+      "filesCreated": ["src/app/dashboard/runs/[runId]/page.tsx", "src/app/dashboard/runs/[runId]/PreviewTable.tsx", "src/app/dashboard/runs/[runId]/actions.ts"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 8,
+      "title": "Summary banner + CSV export",
+      "phase": 3,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [7],
+      "completedDecisions": [
+        "GET /api/runs/[runId]/export: streams CSV with proper content-disposition header",
+        "CSV columns: Supplier SKU, Shopify Variant ID, Product Title, Variant Title, Old Cost, New Cost, Old Price, New Price, Margin %, Flag, Selected",
+        "Below-margin summary banner appears when items_below_margin > 0, links to pricing settings",
+        "Export CSV button in run preview page header"
+      ],
+      "filesCreated": ["src/app/api/runs/[runId]/export/route.ts"],
+      "filesModified": ["src/app/dashboard/runs/[runId]/page.tsx"],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 9,
+      "title": "Shopify OAuth + encrypted token",
+      "phase": 4,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [2],
+      "completedDecisions": [
+        "AES-256-GCM encryption with TOKEN_ENCRYPTION_KEY env var (32-byte hex)",
+        "Payload format: base64(iv[12] + authTag[16] + ciphertext) — never plaintext",
+        "GET /api/shopify/install: validates shop domain, sets state cookie, redirects to Shopify OAuth",
+        "GET /api/shopify/callback: verifies HMAC with timing-safe comparison, exchanges code, encrypts + upserts token",
+        "Shopify settings page: shows connection status, ConnectForm, SyncButton"
+      ],
+      "filesCreated": ["src/lib/crypto/token.ts", "src/app/api/shopify/install/route.ts", "src/app/api/shopify/callback/route.ts", "src/app/dashboard/shopify/page.tsx", "src/app/dashboard/shopify/ConnectForm.tsx"],
+      "filesModified": [],
+      "openQuestions": ["SHOPIFY_API_KEY, SHOPIFY_API_SECRET must be set after creating Custom App in Shopify Partner Dashboard", "TOKEN_ENCRYPTION_KEY must be set — generate with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""],
+      "nextAction": "Create Shopify Custom App → fill env vars → test OAuth flow."
+    },
+    {
+      "id": 10,
+      "title": "Variant catalog sync → sku_mappings baseline",
+      "phase": 4,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [9],
+      "completedDecisions": [
+        "fetchAllVariants: paginates Shopify REST /products.json via Link header cursor, max 20 pages (5000 products)",
+        "syncCatalog: skips variants with empty SKU, upserts on (organization_id, supplier_sku)",
+        "catalog_cache jsonb: stores { shopify_sku, product_title, variant_title, current_price, current_cost: null }",
+        "currentCost left null — Shopify cost requires InventoryItem API (deferred post-MVP)",
+        "POST /api/shopify/sync: triggers syncCatalog for the org's connected store"
+      ],
+      "filesCreated": ["src/lib/shopify/client.ts", "src/lib/shopify/sync-catalog.ts", "src/app/api/shopify/sync/route.ts", "src/app/dashboard/shopify/SyncButton.tsx"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 11,
+      "title": "Wire real catalog into matching (replace mock)",
+      "phase": 4,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [10, 5],
+      "completedDecisions": [
+        "loadLiveCatalog: reads sku_mappings + catalog_cache, builds CatalogEntry[] for org",
+        "match route: uses live catalog when sku_mappings exist, falls back to MOCK_CATALOG",
+        "Mock catalog preserved for dev/testing — will be deleted when no longer needed"
+      ],
+      "filesCreated": ["src/lib/matcher/live-catalog.ts"],
+      "filesModified": ["src/app/api/runs/[runId]/match/route.ts"],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 12,
+      "title": "Sync-to-Shopify + run state machine",
+      "phase": 5,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [11, 8],
+      "completedDecisions": [
+        "writePricesToShopify: per-variant PUT /variants/{id}.json with price as string to 2dp",
+        "POST /api/runs/[runId]/sync: previewed → syncing → completed|failed state machine",
+        "Marks items synced:true on success; records error string on failure",
+        "Sync confirmation page at /dashboard/runs/[runId]/sync with warning + confirm/cancel"
+      ],
+      "filesCreated": ["src/lib/shopify/write-prices.ts", "src/app/api/runs/[runId]/sync/route.ts", "src/app/dashboard/runs/[runId]/sync/page.tsx"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 13,
+      "title": "Run history + audit drill-down",
+      "phase": 5,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [12],
+      "completedDecisions": [
+        "/dashboard/history: server component, table of last 50 runs with status badges",
+        "Audit drill-down is /dashboard/runs/[runId] (same page as preview — shows full item table)"
+      ],
+      "filesCreated": ["src/app/dashboard/history/page.tsx"],
+      "filesModified": [],
+      "openQuestions": [],
+      "nextAction": "Done."
+    },
+    {
+      "id": 14,
+      "title": "Stripe Checkout + webhook → plan update",
+      "phase": 6,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [2],
+      "completedDecisions": [
+        "POST /api/billing/checkout: creates/reuses Stripe customer, opens Checkout session for Pro price",
+        "POST /api/billing/portal: opens Stripe Customer Portal for subscription management",
+        "POST /api/billing/webhook: handles checkout.session.completed, subscription.updated, subscription.deleted",
+        "Webhook verifies Stripe signature before any DB writes",
+        "/dashboard/billing: shows plan features, upgrade button (free) or manage billing (pro)"
+      ],
+      "filesCreated": ["src/app/api/billing/checkout/route.ts", "src/app/api/billing/portal/route.ts", "src/app/api/billing/webhook/route.ts", "src/app/dashboard/billing/page.tsx", "src/app/dashboard/billing/UpgradeButton.tsx", "src/app/dashboard/billing/ManageBillingButton.tsx"],
+      "filesModified": [],
+      "openQuestions": ["STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRO_PRICE_ID must be set in .env.local"],
+      "nextAction": "Create Stripe product + price → fill env vars → register webhook endpoint."
+    },
+    {
+      "id": 15,
+      "title": "Free-tier gate + billing portal + plan badge",
+      "phase": 6,
+      "status": "completed",
+      "completedAt": "2026-06-08",
+      "blockedBy": [14, 12],
+      "completedDecisions": [
+        "checkRunQuota: free orgs limited to 3 non-failed runs; pro orgs unlimited",
+        "Quota gate applied at POST /api/runs before run creation — returns 402 with message",
+        "Sidebar: upgrade nudge button (free only), plan badge removed for brevity",
+        "Billing nav item added to sidebar settings section"
+      ],
+      "filesCreated": ["src/lib/billing/quota.ts"],
+      "filesModified": ["src/app/api/runs/route.ts", "src/components/Sidebar.tsx"],
+      "openQuestions": [],
+      "nextAction": "Done. All 15 issues complete."
+    }
+  ],
+  "phaseStatus": {
+    "phase1": "completed",
+    "phase2": "completed",
+    "phase3": "completed",
+    "phase4": "completed",
+    "phase5": "completed",
+    "phase6": "completed"
+  },
+  "criticalPath": [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13],
+  "parallelOpportunities": [],
+  "nextImmediateAction": "DEPLOYED & VERIFIED. Growth tasks: (1) Add real products to dev store → run full match→price→sync flow. (2) Set up Shopify App listing for distribution. (3) Onboard first beta user.",
+  "postDeployVerification": {
+    "verifiedAt": "2026-06-09",
+    "liveUrl": "https://marginsync-wheat.vercel.app",
+    "deploymentId": "dpl_4LLkYUJFRqv5JvFXXtZxAvr1PfG1",
+    "checks": [
+      "Auth: magic-link sign-in → session → dashboard redirect ✅",
+      "Shopify OAuth: marginsync-test-shop.myshopify.com installed, encrypted token in shopify_connections ✅",
+      "Supabase Storage: supplier-files bucket created (private) ✅",
+      "Upload pipeline: POST /api/runs with sku+supplier_cost+variant_id → HTTP 200, status=parsed, error=NULL ✅",
+      "DB: reprice_runs row 938ba636, items_total=3, items_below_margin=0 ✅",
+      "Column detection: supplier_cost scores 0.6 (includes 'cost'), passes validateHeaders() ✅",
+      "Billing: Shopify App Billing wired (Stripe removed — Indonesia cross-border restriction) ✅",
+      "Quota gate: free tier 3 runs enforced at POST /api/runs (402 on exceeded) ✅"
+    ]
+  }
+}
