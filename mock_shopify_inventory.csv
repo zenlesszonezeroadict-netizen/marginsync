@@ -1,0 +1,113 @@
+Item Code,Product Name,Brand,Category,Wholesale Price,MSRP,Stock Qty,Lead Time (Days),Notes
+BTH-WH-BLK,Bluetooth Headphones (Black),SoundMax,Electronics,28.50,79.99,45,7,
+BTH-WH-WHT,Bluetooth Headphones (White),SoundMax,Electronics,28.50,79.99,32,7,
+BTH-WH-RED,Bluetooth Headphones (Red),SoundMax,Electronics,30.00,79.99,18,7,Red variant has higher production cost
+USB-HUB-4P,4-Port USB Hub,TechLink,Electronics,8.25,24.99,120,14,
+USB-HUB-7P,7-Port USB Hub,TechLink,Electronics,14.75,39.99,88,14,
+WEBCAM-1080,1080p HD Webcam,VisionPro,Electronics,19.99,49.99,55,10,
+WEBCAM-4K,4K Ultra HD Webcam,VisionPro,Electronics,52.00,49.99,12,21,NEGATIVE MARGIN — cost exceeds MSRP
+CHG-LTNG-6FT,Lightning Cable 6ft,ChargeMate,Electronics,3.10,19.99,500,5,
+CHG-USBC-6FT,USB-C Cable 6ft,ChargeMate,Electronics,2.85,19.99,500,5,
+CHG-USBC-10FT,USB-C Cable 10ft,ChargeMate,Electronics,3.75,24.99,300,5,
+PWRBNK-10K,Power Bank 10000mAh,JuicePack,Electronics,12.40,34.99,67,12,
+PWRBNK-20K,Power Bank 20000mAh,JuicePack,Electronics,22.80,59.99,34,12,
+,Ergonomic Wireless Mouse,PrecisionTech,Electronics,18.00,44.99,42,8,SKU not assigned yet — will be unmatched
+KB-MECH-BLK,Mechanical Keyboard (Black),TypeMaster,Electronics,45.00,149.99,23,18,
+KB-MECH-WHT,Mechanical Keyboard (White),TypeMaster,Electronics,47.50,149.99,15,18,White costs more to produce
+KB-MECH-RGB,Mechanical Keyboard RGB Backlit,TypeMaster,Electronics,55.00,179.99,8,21,
+SPKR-BT-S,Bluetooth Speaker Portable,BoomBox,Electronics,15.75,39.99,78,9,
+SPKR-BT-L,Bluetooth Speaker Large,BoomBox,Electronics,35.00,35.00,22,9,ZERO MARGIN — cost equals MSRP
+CABLE-HDMI-6,HDMI Cable 6ft,TechLink,Electronics,4.50,14.99,200,7,
+CABLE-HDMI-15,HDMI Cable 15ft,TechLink,Electronics,7.25,24.99,150,7,
+TEE-BAS-S-BLK,Basic Tee S / Black,ThreadCo,Apparel,4.50,24.99,100,21,
+TEE-BAS-M-BLK,Basic Tee M / Black,ThreadCo,Apparel,4.50,24.99,150,21,
+TEE-BAS-L-BLK,Basic Tee L / Black,ThreadCo,Apparel,4.75,24.99,130,21,Larger sizes cost more
+TEE-BAS-XL-BLK,Basic Tee XL / Black,ThreadCo,Apparel,5.00,24.99,75,21,
+TEE-BAS-S-WHT,Basic Tee S / White,ThreadCo,Apparel,4.50,24.99,100,21,
+TEE-BAS-M-WHT,Basic Tee M / White,ThreadCo,Apparel,4.50,24.99,150,21,
+TEE-BAS-L-WHT,Basic Tee L / White,ThreadCo,Apparel,4.75,24.99,125,21,
+TEE-BAS-XL-WHT,Basic Tee XL / White,ThreadCo,Apparel,5.00,24.99,60,21,
+HOD-ZP-S,Zip Hoodie Small,UrbanEdge,Apparel,18.00,64.99,45,28,
+HOD-ZP-M,Zip Hoodie Medium,UrbanEdge,Apparel,18.00,64.99,60,28,
+HOD-ZP-L,Zip Hoodie Large,UrbanEdge,Apparel,18.50,64.99,55,28,
+HOD-ZP-XL,Zip Hoodie XL,UrbanEdge,Apparel,19.00,64.99,30,28,
+,Zip Hoodie XXL,UrbanEdge,Apparel,20.00,69.99,15,28,New size — SKU pending
+JNS-SKN-28,Skinny Jeans W28,DenimLab,Apparel,22.00,79.99,25,35,
+JNS-SKN-30,Skinny Jeans W30,DenimLab,Apparel,22.00,79.99,40,35,
+JNS-SKN-32,Skinny Jeans W32,DenimLab,Apparel,22.00,79.99,38,35,
+JNS-SKN-34,Skinny Jeans W34,DenimLab,Apparel,22.50,79.99,22,35,
+DRS-SUM-S,Summer Floral Dress Small,FloraFash,Apparel,16.00,54.99,30,28,
+DRS-SUM-M,Summer Floral Dress Medium,FloraFash,Apparel,16.00,54.99,35,28,
+DRS-SUM-L,Summer Floral Dress Large,FloraFash,Apparel,17.00,54.99,20,28,
+SNK-RUN-7,Running Sneakers US 7,StepUp,Apparel,28.00,89.99,12,42,
+SNK-RUN-8,Running Sneakers US 8,StepUp,Apparel,28.00,89.99,20,42,
+SNK-RUN-9,Running Sneakers US 9,StepUp,Apparel,28.00,89.99,24,42,
+SNK-RUN-10,Running Sneakers US 10,StepUp,Apparel,30.00,89.99,22,42,
+SNK-RUN-11,Running Sneakers US 11,StepUp,Apparel,30.00,89.99,18,42,
+SNK-RUN-12,Running Sneakers US 12,StepUp,Apparel,38.00,89.99,8,42,COST SPIKE — premium materials for large sizes
+CAP-ADJ-BLK,Adjustable Baseball Cap Black,UrbanEdge,Apparel,5.50,22.99,80,14,
+CAP-ADJ-NVY,Adjustable Baseball Cap Navy,UrbanEdge,Apparel,5.50,22.99,65,14,
+PLT-POT-S-TRR,Plant Pot Small Terracotta,GardenHome,Home & Garden,2.80,12.99,200,14,
+PLT-POT-M-TRR,Plant Pot Medium Terracotta,GardenHome,Home & Garden,4.50,19.99,150,14,
+PLT-POT-L-TRR,Plant Pot Large Terracotta,GardenHome,Home & Garden,7.20,29.99,80,14,
+PLT-POT-S-WHT,Plant Pot Small White Ceramic,GardenHome,Home & Garden,3.50,16.99,120,14,
+PLT-POT-M-WHT,Plant Pot Medium White Ceramic,GardenHome,Home & Garden,6.00,24.99,90,14,
+LAMP-DSK-BLK,Adjustable Desk Lamp Black,LumineHome,Home & Garden,12.25,39.99,55,21,
+LAMP-DSK-WHT,Adjustable Desk Lamp White,LumineHome,Home & Garden,12.25,39.99,48,21,
+LAMP-DSK-GLD,Adjustable Desk Lamp Gold,LumineHome,Home & Garden,14.00,49.99,22,21,
+CNDL-LAV-6OZ,Soy Candle Lavender 6oz,WickCo,Home & Garden,2.10,24.99,300,7,Very high margin — stress test rounding
+CNDL-LAV-12OZ,Soy Candle Lavender 12oz,WickCo,Home & Garden,3.90,39.99,180,7,
+CNDL-VAN-6OZ,Soy Candle Vanilla 6oz,WickCo,Home & Garden,2.10,24.99,280,7,
+TRAY-BNB-WD,Wooden Breakfast Tray,HouseBlend,Home & Garden,8.75,29.99,40,28,
+,Round Wall Mirror 12in,LumineHome,Home & Garden,0.00,49.99,15,35,SKU missing AND cost zero — dual anomaly
+THRW-PLW-GRY,Throw Pillow Set Grey,SoftHome,Home & Garden,9.50,34.99,60,21,
+THRW-PLW-BLU,Throw Pillow Set Blue,SoftHome,Home & Garden,9.50,34.99,55,21,
+CHRG-MRBL-QI,Marble Wireless Charger,TechChic,Accessories,7.50,49.99,85,10,Highest margin item in catalog
+WLLT-SLM-BLK,Slim Card Wallet Black,LeatherCo,Accessories,8.25,39.99,100,14,
+WLLT-SLM-BRN,Slim Card Wallet Brown,LeatherCo,Accessories,8.25,39.99,80,14,
+WLLT-SLM-TAN,Slim Card Wallet Tan,LeatherCo,Accessories,8.25,39.99,60,14,
+BTTLE-32OZ-BLK,Insulated Bottle 32oz Black,HydroFlow,Kitchen,14.00,44.99,75,21,
+BTTLE-32OZ-WHT,Insulated Bottle 32oz White,HydroFlow,Kitchen,14.00,44.99,60,21,
+BTTLE-32OZ-BLU,Insulated Bottle 32oz Blue,HydroFlow,Kitchen,14.00,44.99,50,21,
+BTTLE-24OZ-BLK,Insulated Bottle 24oz Black,HydroFlow,Kitchen,11.50,39.99,85,21,
+BTTLE-24OZ-WHT,Insulated Bottle 24oz White,HydroFlow,Kitchen,11.50,39.99,70,21,
+WATCH-SMRT-BLK,Smart Watch Black Band,TechWear,Accessories,45.00,199.99,18,30,
+WATCH-SMRT-WHT,Smart Watch White Band,TechWear,Accessories,45.00,199.99,12,30,
+SNGL-POL-BLK,Polarized Sunglasses Black,SunShade,Accessories,6.75,39.99,90,14,
+SNGL-POL-TOR,Polarized Sunglasses Tortoise,SunShade,Accessories,6.75,39.99,75,14,
+SNGL-POL-BRN,Polarized Sunglasses Brown,SunShade,Accessories,6.75,39.99,60,14,
+MFFLR-SCF-GRY,Merino Wool Scarf Grey,WoolMark,Accessories,11.00,44.99,40,35,
+YGA-MAT-PRP,Yoga Mat Purple,ZenFit,Sports,12.50,49.99,45,21,
+YGA-MAT-BLU,Yoga Mat Blue,ZenFit,Sports,12.50,49.99,50,21,
+YGA-MAT-BLK,Yoga Mat Black,ZenFit,Sports,12.50,49.99,38,21,
+RSST-BND-LT,Resistance Band Set Light,FlexGear,Sports,4.25,19.99,120,14,
+RSST-BND-MD,Resistance Band Set Medium,FlexGear,Sports,4.25,19.99,100,14,
+RSST-BND-HV,Resistance Band Set Heavy,FlexGear,Sports,4.25,19.99,85,14,
+FOAM-RLR-12,Foam Roller 12in,FlexGear,Sports,7.00,24.99,65,14,
+FOAM-RLR-24,Foam Roller 24in,FlexGear,Sports,11.50,34.99,40,14,
+JUMP-RPE-SLK,Speed Jump Rope,AthleteEdge,Sports,3.50,14.99,150,10,
+BTTL-SPT-24,Sports Water Bottle 24oz,AthleteEdge,Sports,5.50,22.99,80,14,
+,Gym Gloves S/M,FlexGear,Sports,6.25,19.99,35,21,Awaiting SKU from supplier
+GYM-GLV-LXL,Gym Gloves L/XL,FlexGear,Sports,6.25,19.99,28,21,
+SKNCR-VIT-C,Vitamin C Serum 30ml,GlowLab,Beauty,8.50,49.99,60,14,
+SKNCR-MSTR-NRM,Moisturizer Normal Skin 50ml,GlowLab,Beauty,6.75,34.99,55,14,
+SKNCR-MSTR-DRY,Moisturizer Dry Skin 50ml,GlowLab,Beauty,7.00,34.99,45,14,
+SHM-VOL-250,Volumizing Shampoo 250ml,HairLux,Beauty,4.25,18.99,100,7,
+COND-VOL-250,Volumizing Conditioner 250ml,HairLux,Beauty,4.25,18.99,95,7,
+SPF-FACE-50,SPF 50 Face Sunscreen 60ml,SunSafe,Beauty,5.80,22.99,80,14,
+LIP-BLSM-VAN,Lip Balm Vanilla 3-Pack,GlowLab,Beauty,1.50,9.99,250,7,Extreme margin ratio — tests rounding edge
+DFSR-ESNTL-LVN,Essential Oil Diffuser Lavender Set,AromaZen,Beauty,9.50,39.99,40,21,
+ANML-NEGMRG-A,Test Item Negative Margin A,StressTest,Test,45.00,39.99,3,0,STRESS TEST — cost exceeds price by $5
+ANML-NEGMRG-B,Test Item Negative Margin B,StressTest,Test,99.99,49.99,2,0,STRESS TEST — severe pricing error
+ANML-ZEROCST-A,Test Item Zero Cost A,StressTest,Test,0.00,29.99,10,0,STRESS TEST — cost data missing
+ANML-ZEROCST-B,Test Item Zero Cost B,StressTest,Test,0,14.99,5,0,STRESS TEST — alternate zero format
+ANML-MASSDELTA,Test Item Massive Delta,StressTest,Test,1.99,149.99,50,0,STRESS TEST — $148 spread tests price compute
+ANML-IDENTCOST,Test Item Zero Margin,StressTest,Test,19.99,19.99,15,0,STRESS TEST — cost equals price exactly
+ANML-DUP-SKU-1,Duplicate SKU First Instance,StressTest,Test,8.50,29.99,20,7,STRESS TEST — duplicate SKU below
+ANML-DUP-SKU-1,Duplicate SKU Second Instance,StressTest,Test,9.00,32.99,15,7,STRESS TEST — same SKU different cost
+,Unassigned Product Alpha,StressTest,Test,12.99,59.99,8,14,STRESS TEST — no SKU no match expected
+,Unassigned Product Beta,StressTest,Test,24.99,99.99,4,21,STRESS TEST — no SKU no match expected
+ANML-LONGSKU-XXXXXXXXXXXXXXXXXXX,Very Long SKU Test Item,StressTest,Test,5.00,19.99,10,14,STRESS TEST — abnormally long identifier
+ANML-SPCLCHR,Item with Special Ch@rs in Name!,StressTest,Test,7.50,24.99,12,14,STRESS TEST — special chars in product name
+ANML-HIGHCOST,High Cost Luxury Item,StressTest,Test,480.00,499.99,2,60,STRESS TEST — very high absolute cost
+ANML-FRACTCST,Fractional Cost Precision Item,StressTest,Test,4.333,19.99,25,7,STRESS TEST — cost with 3 decimal places
