@@ -70,6 +70,27 @@ export async function POST(request: NextRequest) {
     .delete()
     .eq('shop_domain', shopDomain)
 
+  // 4. Anonymise PII — resolve user_ids for this org then nullify personal data
+  const { data: members } = await admin
+    .from('organization_members')
+    .select('user_id')
+    .eq('organization_id', orgId)
+
+  const userIds = (members ?? []).map((m: { user_id: string }) => m.user_id)
+
+  await admin
+    .from('organizations')
+    .update({ name: '[redacted]', pricing_rule: null, notification_settings: null })
+    .eq('id', orgId)
+
+  for (const userId of userIds) {
+    await admin
+      .from('profiles')
+      .update({ email: null, full_name: null })
+      .eq('id', userId)
+  }
+
+  console.log(`[GDPR] shop/redact: anonymised profiles and org for ${shopDomain}.`)
   console.log(`[GDPR] shop/redact: purged all DB records for shop ${shopDomain} (org ${orgId}).`)
 
   // 4. Purge uploaded supplier files from Storage — non-blocking so response is instant
