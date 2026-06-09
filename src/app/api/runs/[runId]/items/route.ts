@@ -91,7 +91,7 @@ export async function GET(
       selectedForSync: selectedRes.count ?? 0,
     },
     // Backward-compatible fields
-    matchedCount: (okRes.count ?? 0) + (costUpRes.count ?? 0) + (belowMarginRes.count ?? 0),
+    matchedCount: (run.items_total ?? 0) - (unmatchedRes.count ?? 0),
     total: allCount,
   })
 }
