@@ -1,0 +1,96 @@
+============================================================
+ MarginSync — captions for your TikTok / Reels / Shorts
+============================================================
+Post the SAME finished.mp4 to all three. Use the caption +
+hashtags below for each. Keep the hook line as the very first
+words of the on-screen text too.
+
+------------------------------------------------------------
+ TIKTOK
+------------------------------------------------------------
+Caption:
+I'm 14 and I built a Shopify app with zero coding experience.
+It updates supplier prices automatically so store owners stop
+wasting hours on it. It's free right now — comment "price"
+and I'll send the link 👇
+
+Hashtags:
+#shopify #ecommerce #buildinpublic #shopifytips #smallbusiness
+#founder #tech #codingjourney #saas #dropshipping
+
+------------------------------------------------------------
+ INSTAGRAM REELS
+------------------------------------------------------------
+Caption:
+14 years old, no coding background, and I built a Shopify
+tool that auto-updates supplier prices. It turns a 3-hour job
+into 2 minutes. Free while it's in beta — comment "price" for
+the link.
+
+Hashtags:
+#shopify #ecommerce #shopifystore #onlinestore #buildinpublic
+#entrepreneur #smallbusinessowner #techtok #startup #founder
+
+------------------------------------------------------------
+ YOUTUBE SHORTS
+------------------------------------------------------------
+Title:
+I built a Shopify app at 14 with no coding experience
+
+Description:
+MarginSync updates your Shopify prices from a supplier CSV in
+about two minutes, with a full preview and one-click undo.
+I built it with no coding background. It's free during beta —
+try it: https://marginsync-wheat.vercel.app
+#shopify #ecommerce #shorts #buildinpublic #startup
+
+------------------------------------------------------------
+ CAPTIONS ON THE VIDEO ITSELF (burned-in text)
+------------------------------------------------------------
+Captions on-screen massively boost watch time. Two options:
+  - Run install-auto-captions.bat once, and make-video.bat
+    will transcribe and burn them in for you automatically.
+  - Or write them by hand in captions.srt (template below).
+
+Whichever you use, the FIRST words on screen should be your
+hook ("I'm 14 and I built a Shopify app...") so people who
+watch with sound off still get pulled in.
+
+------------------------------------------------------------
+ captions.srt TEMPLATE (edit the timings to match your clips,
+ or just let auto-captions do it)
+------------------------------------------------------------
+1
+00:00:00,000 --> 00:00:03,000
+I'm 14 and I built a Shopify app
+
+2
+00:00:03,000 --> 00:00:06,000
+with zero coding experience
+
+3
+00:00:06,000 --> 00:00:12,000
+If your supplier sends a price list
+
+4
+00:00:12,000 --> 00:00:18,000
+you used to update every product by hand
+
+5
+00:00:18,000 --> 00:00:24,000
+Now you upload the file and it does it for you
+
+6
+00:00:24,000 --> 00:00:30,000
+It's free right now — comment "price" for the link
+
+------------------------------------------------------------
+ POSTING ROUTINE
+------------------------------------------------------------
+- Post all 3 the same day, then reply to every comment fast.
+- When someone comments "price", reply with the link AND
+  send it as a DM. Both count as engagement.
+- Make 2-3 versions with different hooks (see VIDEO-SCRIPT.txt)
+  and post over a few days. One of them usually outperforms
+  the rest — make more like that one.
+============================================================

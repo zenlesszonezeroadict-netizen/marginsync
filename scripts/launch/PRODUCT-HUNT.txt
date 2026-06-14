@@ -1,0 +1,101 @@
+============================================================
+ MarginSync — Product Hunt launch kit
+============================================================
+Product Hunt sends a one-time spike of tech-savvy early
+adopters. Best to launch AFTER your site is solid (it is)
+and you can reply to comments all day. Everything below is
+ready to paste at  producthunt.com/posts/new .
+
+------------------------------------------------------------
+ WHEN TO LAUNCH
+------------------------------------------------------------
+- Launch at 12:01 AM PACIFIC time (PT). The PH day resets
+  then, so you get a full 24 hours on the leaderboard.
+  (12:01 AM PT = ~3:01 PM Jakarta / WIB.)
+- Pick a Tuesday, Wednesday, or Thursday. Avoid weekends.
+- Block out the day to reply to every comment within minutes.
+  Engagement is the whole game on PH.
+
+------------------------------------------------------------
+ NAME
+------------------------------------------------------------
+MarginSync
+
+------------------------------------------------------------
+ TAGLINE  (max 60 characters — this one is 52)
+------------------------------------------------------------
+Turn supplier price lists into Shopify prices in 2 min
+
+(Alternatives:)
+- Sync supplier CSV prices into Shopify, safely
+- Stop hand-typing supplier prices into Shopify
+
+------------------------------------------------------------
+ DESCRIPTION  (the short blurb under the tagline)
+------------------------------------------------------------
+MarginSync is a Shopify app for stores that price from
+supplier CSV or Excel files. Upload the file, it auto-detects
+your SKU and cost columns, matches them to your catalogue,
+and shows a full preview before any price changes. One click
+to apply, one click to roll back. Free during beta.
+
+------------------------------------------------------------
+ TOPICS / CATEGORIES (pick up to 3)
+------------------------------------------------------------
+E-Commerce  •  Shopify  •  SaaS
+
+------------------------------------------------------------
+ FIRST COMMENT  (post this yourself the moment you launch —
+ it's the most important text on the page)
+------------------------------------------------------------
+Hey Product Hunt 👋
+
+I'm Hughez. I'm 14, based in Jakarta, and I built MarginSync
+with no coding background using AI tooling.
+
+The problem: stores that buy from real suppliers get price
+lists as CSV or Excel files, and updating those prices in
+Shopify means matching SKUs and re-typing numbers by hand for
+hours. One typo quietly wrecks a margin for a month.
+
+MarginSync fixes that. You upload the supplier file exactly
+as it arrived. It figures out your SKU and cost columns,
+matches them to your live catalogue, and shows you every
+price change BEFORE anything goes live. Apply in one click,
+roll back in one click, everything logged.
+
+It's completely free while it's in beta. I'd genuinely love
+feedback from anyone who runs a store:
+ - Would you actually use this, or do you price a different way?
+ - What would make you trust it with your live prices?
+ - Anything that would stop you trying it?
+
+I'll be here all day answering everything. Thanks for taking
+a look 🙏
+
+------------------------------------------------------------
+ LINKS
+------------------------------------------------------------
+Website:  https://marginsync-wheat.vercel.app
+Blog (for the gallery / extra context): https://marginsync-wheat.vercel.app/blog
+
+------------------------------------------------------------
+ GALLERY (images to upload — record these on your test store)
+------------------------------------------------------------
+1. The upload screen with a supplier CSV selected
+2. The PREVIEW screen showing price changes (this is the
+   money shot — show old price -> new price)
+3. The success / synced state
+4. A simple "before vs after" graphic: "3 hours by hand ->
+   2 minutes" (optional, Canva)
+Tip: 1270x760px or 16:9. The first image is your thumbnail —
+make it the preview screen.
+
+------------------------------------------------------------
+ DON'T
+------------------------------------------------------------
+- Don't mention the cold-email bot anywhere.
+- Don't buy upvotes or ask in big groups to "upvote me" —
+  PH detects it and penalises the post. Share the link with
+  real people and let it ride.
+============================================================
