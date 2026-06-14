@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { uploadSupplierFile } from '@/lib/supabase/storage'
 import { parseFile } from '@/lib/parser/parse-file'
-import { checkRunQuota } from '@/lib/billing/quota'
+import { checkRunQuota, MAX_ROWS_PER_UPLOAD } from '@/lib/billing/quota'
 import { validateHeaders } from '@/lib/parser/validate-headers'
 
 export async function POST(request: NextRequest) {
@@ -42,14 +42,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 })
   }
 
-  const allowedTypes = [
-    'text/csv',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.ms-excel',
-    'application/octet-stream',
-  ]
+  const MAX_FILE_BYTES = 20 * 1024 * 1024
+  if (file.size > MAX_FILE_BYTES) {
+    return NextResponse.json({ error: 'File must be under 20 MB' }, { status: 413 })
+  }
+
   const fileExt = file.name.toLowerCase().split('.').pop()
-  if (!allowedTypes.includes(file.type) && !['csv', 'xlsx', 'xls'].includes(fileExt ?? '')) {
+  const allowedExts = ['csv', 'xlsx', 'xls']
+  if (!allowedExts.includes(fileExt ?? '')) {
     return NextResponse.json({ error: 'Only CSV and XLSX files are supported' }, { status: 400 })
   }
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     // Parse the file — throw from here means the file is malformed/unreadable
     let rows
     try {
-      rows = parseFile(buffer, file.name, file.type)
+      rows = await parseFile(buffer, file.name, file.type)
     } catch {
       await admin
         .from('reprice_runs')
@@ -106,6 +106,17 @@ export async function POST(request: NextRequest) {
         .update({ status: 'failed', error: 'File contained no parseable rows' })
         .eq('id', runId)
       return MALFORMED_RESPONSE
+    }
+
+    if (rows.length > MAX_ROWS_PER_UPLOAD) {
+      await admin
+        .from('reprice_runs')
+        .update({ status: 'failed', error: 'File exceeds row limit' })
+        .eq('id', runId)
+      return NextResponse.json(
+        { error: `File has ${rows.length.toLocaleString()} rows. Maximum allowed is ${MAX_ROWS_PER_UPLOAD.toLocaleString()}.` },
+        { status: 413 }
+      )
     }
 
     const headers = Object.keys(rows[0] ?? {})

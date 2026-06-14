@@ -6,7 +6,12 @@ import type { RunAnalytics, AnalyticsTotals } from '@/components/AnalyticsCharts
 import { OnboardingBanner } from '@/components/OnboardingBanner'
 import type { OnboardingStatus } from '@/components/OnboardingBanner'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>
+}) {
+  const { upgraded } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -133,6 +138,18 @@ export default async function DashboardPage() {
   return (
     <div className="p-8 max-w-4xl">
       <OnboardingBanner status={onboarding} />
+
+      {upgraded === '1' && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-4">
+          <svg className="h-5 w-5 text-emerald-500 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clipRule="evenodd" />
+          </svg>
+          <div>
+            <p className="text-sm font-semibold text-emerald-800">You&apos;re now on MarginSync Pro!</p>
+            <p className="text-xs text-emerald-700 mt-0.5">Sync limits removed. Enjoy unlimited repricing runs and direct Shopify sync.</p>
+          </div>
+        </div>
+      )}
 
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>

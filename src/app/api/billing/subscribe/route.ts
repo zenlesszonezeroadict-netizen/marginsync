@@ -2,8 +2,17 @@ import { NextResponse } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { decryptToken } from '@/lib/crypto/token'
 import { createSubscription } from '@/lib/shopify/billing'
+import { BETA_FREE_MODE } from '@/lib/billing/beta'
 
 export async function POST() {
+  // No upgrades during beta — everything is free, so there's nothing to charge for.
+  if (BETA_FREE_MODE) {
+    return NextResponse.json(
+      { error: 'MarginSync is completely free during beta — there is nothing to upgrade. Enjoy!' },
+      { status: 400 }
+    )
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const isTest = process.env.NODE_ENV !== 'production'
 
@@ -58,7 +67,7 @@ export async function POST() {
 
     return NextResponse.json({ url: confirmationUrl })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[billing/subscribe] error creating subscription:', err instanceof Error ? err.message : err)
+    return NextResponse.json({ error: 'Could not create subscription. Please try again.' }, { status: 500 })
   }
 }

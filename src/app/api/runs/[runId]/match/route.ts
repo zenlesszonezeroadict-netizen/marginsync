@@ -57,7 +57,7 @@ export async function POST(
     return NextResponse.json({ error: 'Could not retrieve uploaded file' }, { status: 500 })
   }
 
-  const rows = parseFile(buffer, run.source_filename ?? 'file.csv', 'text/csv')
+  const rows = await parseFile(buffer, run.source_filename ?? 'file.csv', 'text/csv')
 
   // Load saved SKU mappings for this org
   const { data: mappingRows } = await admin
@@ -91,7 +91,6 @@ export async function POST(
     synced: false,
   }))
 
-  // Delete any existing items for this run (idempotent re-match)
   await admin.from('reprice_run_items').delete().eq('run_id', runId)
   await admin.from('reprice_run_items').insert(itemsToInsert)
 

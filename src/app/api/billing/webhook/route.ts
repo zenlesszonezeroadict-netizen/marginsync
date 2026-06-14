@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   if (!connection) {
     // Store not connected to any org — log and ack
-    console.warn('[billing/webhook] Unknown shop domain:', shopDomain)
+    console.warn('[billing/webhook] Unknown shop domain in subscription update')
     return NextResponse.json({ received: true })
   }
 

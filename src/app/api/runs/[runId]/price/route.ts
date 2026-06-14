@@ -26,6 +26,16 @@ export async function POST(
   const orgId = membership.organization_id
   const admin = createAdminClient()
 
+  // Verify run belongs to this org before doing anything
+  const { data: runCheck } = await admin
+    .from('reprice_runs')
+    .select('id')
+    .eq('id', runId)
+    .eq('organization_id', orgId)
+    .single()
+
+  if (!runCheck) return NextResponse.json({ error: 'Run not found' }, { status: 404 })
+
   // Load org pricing rule + margin target
   const { data: org } = await admin
     .from('organizations')
@@ -118,6 +128,7 @@ export async function POST(
       items_below_margin: belowMarginCount,
     })
     .eq('id', runId)
+    .eq('organization_id', orgId)
 
   return NextResponse.json({
     total: pricedRows.length,

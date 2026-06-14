@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { BETA_FREE_MODE } from '@/lib/billing/beta'
 
 export async function GET(
   _request: NextRequest,
@@ -20,6 +21,20 @@ export async function GET(
   if (!membership) return NextResponse.json({ error: 'No organization' }, { status: 400 })
 
   const admin = createAdminClient()
+
+  const { data: org } = await admin
+    .from('organizations')
+    .select('plan')
+    .eq('id', membership.organization_id)
+    .single()
+
+  // During beta everything is free — only enforce the Pro paywall once beta ends.
+  if (!BETA_FREE_MODE && org?.plan !== 'pro') {
+    return NextResponse.json(
+      { error: 'CSV export requires MarginSync Pro. Upgrade from the Billing page.' },
+      { status: 402 }
+    )
+  }
 
   const { data: run } = await admin
     .from('reprice_runs')
@@ -72,8 +87,10 @@ export async function GET(
   ]
 
   const csv = csvLines.join('\r\n')
-  const baseFilename = run.source_filename?.replace(/\.[^.]+$/, '') ?? `run-${runId.slice(0, 8)}`
-  const filename = `${baseFilename}-repriced.csv`
+  const safeBase = (run.source_filename?.replace(/\.[^.]+$/, '') ?? `run-${runId.slice(0, 8)}`)
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .slice(0, 100)
+  const filename = `${safeBase}-repriced.csv`
 
   return new NextResponse(csv, {
     status: 200,
@@ -87,8 +104,10 @@ export async function GET(
 function csvCell(val: string | null | undefined): string {
   if (val === null || val === undefined) return ''
   const str = String(val)
-  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-    return `"${str.replace(/"/g, '""')}"`
+  // Prevent formula injection — prefix dangerous leading characters
+  const safe = /^[=+\-@\t\r]/.test(str) ? `'${str}` : str
+  if (safe.includes(',') || safe.includes('"') || safe.includes('\n')) {
+    return `"${safe.replace(/"/g, '""')}"`
   }
-  return str
+  return safe
 }

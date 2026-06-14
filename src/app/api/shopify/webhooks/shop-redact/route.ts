@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
   if (!connection) {
     // Already purged or never installed — idempotent success
-    console.log(`[GDPR] shop/redact: ${shopDomain} — no connection record found, nothing to purge.`)
+    console.log('[GDPR] shop/redact: no connection record found, nothing to purge.')
     return new NextResponse(null, { status: 200 })
   }
 
@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
       .eq('id', userId)
   }
 
-  console.log(`[GDPR] shop/redact: anonymised profiles and org for ${shopDomain}.`)
-  console.log(`[GDPR] shop/redact: purged all DB records for shop ${shopDomain} (org ${orgId}).`)
+  console.log('[GDPR] shop/redact: anonymised profiles and org record.')
+  console.log('[GDPR] shop/redact: purged all DB records.')
 
   // 4. Purge uploaded supplier files from Storage — non-blocking so response is instant
   void purgeStorageForOrg(orgId)
@@ -119,9 +119,9 @@ async function purgeStorageForOrg(orgId: string): Promise<void> {
       await admin.storage.from(BUCKET).remove(paths)
     }
 
-    console.log(`[GDPR] shop/redact: storage purge complete for org ${orgId}.`)
+    console.log('[GDPR] shop/redact: storage purge complete.')
   } catch (err) {
     // Non-fatal — manual cleanup can be triggered if needed
-    console.error(`[GDPR] shop/redact: storage purge failed for org ${orgId}:`, err)
+    console.error('[GDPR] shop/redact: storage purge failed:', err)
   }
 }

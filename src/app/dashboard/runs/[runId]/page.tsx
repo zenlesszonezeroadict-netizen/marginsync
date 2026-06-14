@@ -24,12 +24,19 @@ export default async function RunPreviewPage({ params }: PageProps) {
 
   const admin = createAdminClient()
 
-  const { data: run } = await admin
-    .from('reprice_runs')
-    .select('id, status, source_filename, items_total, items_changed, items_below_margin, created_at')
-    .eq('id', runId)
-    .eq('organization_id', membership.organization_id)
-    .single()
+  const [{ data: run }, { data: orgRow }] = await Promise.all([
+    admin
+      .from('reprice_runs')
+      .select('id, status, source_filename, items_total, items_changed, items_below_margin, created_at')
+      .eq('id', runId)
+      .eq('organization_id', membership.organization_id)
+      .single(),
+    admin
+      .from('organizations')
+      .select('plan')
+      .eq('id', membership.organization_id)
+      .single(),
+  ])
 
   if (!run) redirect('/dashboard')
 
@@ -69,6 +76,7 @@ export default async function RunPreviewPage({ params }: PageProps) {
     selectedForSync: selectedCount     ?? 0,
   }
 
+  const isPro = orgRow?.plan === 'pro'
   const canSync = run.status === 'previewed'
   const isSyncing = run.status === 'syncing'
   const isCompleted = run.status === 'completed'
@@ -91,18 +99,32 @@ export default async function RunPreviewPage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href={`/api/runs/${runId}/export`}
-            className="inline-flex items-center gap-1.5 border border-gray-200 bg-white text-sm text-gray-600 font-medium px-3 py-2 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-            Export CSV
-          </Link>
+          {isPro ? (
+            <Link
+              href={`/api/runs/${runId}/export`}
+              className="inline-flex items-center gap-1.5 border border-gray-200 bg-white text-sm text-gray-600 font-medium px-3 py-2 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Export CSV
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard/billing"
+              className="inline-flex items-center gap-1.5 border border-gray-200 bg-white text-sm text-gray-400 font-medium px-3 py-2 rounded-lg hover:border-indigo-200 hover:text-indigo-600 transition-colors"
+              title="Export CSV — Pro feature"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              Export CSV
+              <span className="text-[10px] font-semibold bg-indigo-100 text-indigo-700 rounded px-1">Pro</span>
+            </Link>
+          )}
           <StatusBadge status={run.status} />
           {canSync && (
-            <SyncButton runId={runId} />
+            <SyncButton runId={runId} isPro={isPro} />
           )}
           {isSyncing && (
             <span className="text-sm text-blue-600 font-medium animate-pulse">
@@ -147,7 +169,22 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function SyncButton({ runId }: { runId: string }) {
+function SyncButton({ runId, isPro }: { runId: string; isPro: boolean }) {
+  if (!isPro) {
+    return (
+      <Link
+        href="/dashboard/billing"
+        className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-200 transition-colors"
+        title="Sync to Shopify — Pro feature"
+      >
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+        </svg>
+        Push to Shopify
+        <span className="text-[10px] font-semibold bg-indigo-200 text-indigo-800 rounded px-1">Pro</span>
+      </Link>
+    )
+  }
   return (
     <Link
       href={`/dashboard/runs/${runId}/sync`}

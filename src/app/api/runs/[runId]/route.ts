@@ -92,6 +92,7 @@ export async function PATCH(
     .from('reprice_runs')
     .update({ column_config: updated })
     .eq('id', runId)
+    .eq('organization_id', membership.organization_id)
 
   return NextResponse.json({ ok: true })
 }

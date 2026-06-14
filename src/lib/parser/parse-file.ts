@@ -2,7 +2,6 @@ import { parseCsv } from './parse-csv'
 import { parseXlsx } from './parse-xlsx'
 import type { ParsedRow } from './types'
 
-/** Supported MIME types and extensions. */
 const XLSX_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   'application/vnd.ms-excel',
@@ -16,15 +15,11 @@ function isXlsx(filename: string, mimeType: string): boolean {
   return XLSX_EXTS.has(ext) || XLSX_TYPES.has(mimeType)
 }
 
-/**
- * Parse a supplier file buffer into ParsedRow[].
- * Dispatches to the correct parser based on filename extension + MIME type.
- */
-export function parseFile(
+export async function parseFile(
   buffer: Buffer,
   filename: string,
   mimeType: string
-): ParsedRow[] {
+): Promise<ParsedRow[]> {
   if (isXlsx(filename, mimeType)) {
     return parseXlsx(buffer)
   }

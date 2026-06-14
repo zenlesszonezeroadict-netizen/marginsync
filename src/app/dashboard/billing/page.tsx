@@ -2,6 +2,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { UpgradeButton } from './UpgradeButton'
 import { ManageBillingButton } from './ManageBillingButton'
+import { BETA_FREE_MODE } from '@/lib/billing/beta'
 
 export default async function BillingPage() {
   const supabase = await createClient()
@@ -33,13 +34,17 @@ export default async function BillingPage() {
 
   const isPro = org?.plan === 'pro'
   const hasShopify = !!connection?.shop_domain
+  // During beta every feature is unlocked for everyone, free of charge.
+  const unlocked = isPro || BETA_FREE_MODE
 
   return (
     <div className="p-8 max-w-2xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Billing</h1>
         <p className="text-sm text-gray-500 mt-1">
-          MarginSync Pro is billed through your Shopify account — no credit card required outside of Shopify.
+          {BETA_FREE_MODE
+            ? 'MarginSync is free while in beta — every feature is unlocked and there is nothing to pay.'
+            : 'MarginSync Pro is billed through your Shopify account — no credit card required outside of Shopify.'}
         </p>
       </div>
 
@@ -48,7 +53,9 @@ export default async function BillingPage() {
           <div>
             <p className="text-sm font-semibold text-gray-800">Current plan</p>
             <p className="text-xs text-gray-500 mt-0.5">
-              {org?.subscription_status === 'active'
+              {BETA_FREE_MODE
+                ? 'Free during beta — all features unlocked'
+                : org?.subscription_status === 'active'
                 ? 'Active Shopify subscription'
                 : org?.subscription_status === 'frozen'
                 ? 'Subscription frozen — check Shopify billing'
@@ -57,11 +64,13 @@ export default async function BillingPage() {
           </div>
           <span className={[
             'text-xs font-semibold rounded-full px-3 py-1.5 border',
-            isPro
+            isPro && !BETA_FREE_MODE
               ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+              : BETA_FREE_MODE
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : 'bg-gray-50 text-gray-600 border-gray-200',
           ].join(' ')}>
-            {isPro ? 'Pro' : 'Free'}
+            {BETA_FREE_MODE ? 'Beta' : isPro ? 'Pro' : 'Free'}
           </span>
         </div>
 
@@ -73,9 +82,9 @@ export default async function BillingPage() {
               { feature: 'SKU fuzzy-matching engine', included: true },
               { feature: 'Pricing rule engine + margin flags', included: true },
               { feature: 'Shopify catalog sync', included: true },
-              { feature: 'Bulk price write to Shopify', included: isPro, proOnly: true },
-              { feature: 'Unlimited repricing runs', included: isPro, proOnly: true },
-              { feature: 'CSV export', included: isPro, proOnly: true },
+              { feature: 'Bulk price write to Shopify', included: unlocked, proOnly: true },
+              { feature: 'Unlimited repricing runs', included: unlocked, proOnly: true },
+              { feature: 'CSV export', included: unlocked, proOnly: true },
             ].map(({ feature, included, proOnly }) => (
               <div key={feature} className="flex items-center gap-2.5">
                 {included ? (
@@ -89,7 +98,7 @@ export default async function BillingPage() {
                 )}
                 <span className={`text-sm ${included ? 'text-gray-700' : 'text-gray-400'}`}>
                   {feature}
-                  {proOnly && !isPro && (
+                  {proOnly && !unlocked && (
                     <span className="ml-1.5 text-xs font-medium text-indigo-600">Pro</span>
                   )}
                 </span>
@@ -99,7 +108,15 @@ export default async function BillingPage() {
         </div>
       </div>
 
-      {isPro ? (
+      {BETA_FREE_MODE ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6">
+          <p className="text-base font-semibold text-emerald-900 mb-1">You&apos;re on the free beta 🎉</p>
+          <p className="text-sm text-emerald-700">
+            Every feature is unlocked and there&apos;s no charge while MarginSync is in beta — including
+            syncing prices to Shopify and CSV export. No credit card, nothing to upgrade.
+          </p>
+        </div>
+      ) : isPro ? (
         <div className="flex items-center gap-4">
           {hasShopify && <ManageBillingButton shopDomain={connection!.shop_domain} />}
         </div>

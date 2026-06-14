@@ -17,8 +17,10 @@ export async function fetchInventoryMap(
   const map = new Map<string, number>()
   const BATCH = 50
 
+  const NUMERIC = /^\d+$/
   for (let i = 0; i < variantIds.length; i += BATCH) {
-    const batch = variantIds.slice(i, i + BATCH)
+    const batch = variantIds.slice(i, i + BATCH).filter(id => NUMERIC.test(id))
+    if (batch.length === 0) continue
     const ids = batch.map((id) => `"gid://shopify/ProductVariant/${id}"`).join(', ')
     const query = `{ nodes(ids: [${ids}]) { ... on ProductVariant { id inventoryQuantity } } }`
 

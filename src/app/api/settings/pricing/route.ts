@@ -52,6 +52,7 @@ export async function PATCH(request: NextRequest) {
       body.pricingRule.type !== 'markup' ||
       typeof body.pricingRule.value !== 'number' ||
       body.pricingRule.value <= 0 ||
+      body.pricingRule.value > 100 ||
       !['0.99', '0.00', 'none'].includes(body.pricingRule.rounding)
     ) {
       return NextResponse.json({ error: 'Invalid pricing rule' }, { status: 400 })
@@ -86,15 +87,23 @@ export async function PATCH(request: NextRequest) {
 
   const admin = createAdminClient()
 
-  if (body.pricingRule !== undefined && body.marginTargetPct !== undefined) {
+  // Explicitly reconstruct to prevent extra client-supplied keys reaching the DB
+  const cleanRule: PricingRule | undefined = body.pricingRule !== undefined ? {
+    type: 'markup',
+    value: body.pricingRule.value,
+    rounding: body.pricingRule.rounding,
+    ...(body.pricingRule.scarcityRules ? { scarcityRules: body.pricingRule.scarcityRules } : {}),
+  } : undefined
+
+  if (cleanRule !== undefined && body.marginTargetPct !== undefined) {
     await admin
       .from('organizations')
-      .update({ pricing_rule: body.pricingRule as unknown as Json, margin_target_pct: body.marginTargetPct })
+      .update({ pricing_rule: cleanRule as unknown as Json, margin_target_pct: body.marginTargetPct })
       .eq('id', membership.organization_id)
-  } else if (body.pricingRule !== undefined) {
+  } else if (cleanRule !== undefined) {
     await admin
       .from('organizations')
-      .update({ pricing_rule: body.pricingRule as unknown as Json })
+      .update({ pricing_rule: cleanRule as unknown as Json })
       .eq('id', membership.organization_id)
   } else if (body.marginTargetPct !== undefined) {
     await admin

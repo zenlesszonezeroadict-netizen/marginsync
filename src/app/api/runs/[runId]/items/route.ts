@@ -54,6 +54,7 @@ export async function GET(
       { count: 'exact' }
     )
     .eq('run_id', runId)
+    .eq('organization_id', membership.organization_id)
     .order('flag', { ascending: true })
     .range(from, to)
 
@@ -65,11 +66,11 @@ export async function GET(
   const [itemsResult, okRes, costUpRes, belowMarginRes, unmatchedRes, selectedRes] =
     await Promise.all([
       itemQuery,
-      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('flag', 'ok'),
-      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('flag', 'cost_up'),
-      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('flag', 'below_margin'),
-      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('flag', 'unmatched'),
-      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('selected', true).not('shopify_variant_id', 'is', null),
+      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('organization_id', membership.organization_id).eq('flag', 'ok'),
+      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('organization_id', membership.organization_id).eq('flag', 'cost_up'),
+      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('organization_id', membership.organization_id).eq('flag', 'below_margin'),
+      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('organization_id', membership.organization_id).eq('flag', 'unmatched'),
+      admin.from('reprice_run_items').select('id', { count: 'exact', head: true }).eq('run_id', runId).eq('organization_id', membership.organization_id).eq('selected', true).not('shopify_variant_id', 'is', null),
     ])
 
   const allCount   = run.items_total ?? 0

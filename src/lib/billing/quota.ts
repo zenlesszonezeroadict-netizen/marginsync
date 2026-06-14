@@ -1,11 +1,12 @@
 import { createAdminClient } from '@/lib/supabase/server'
 
-const FREE_TIER_RUN_LIMIT = 3
+const FREE_TIER_RUN_LIMIT = 999 // effectively unlimited during beta
+const FREE_TIER_RUNS_PER_DAY = 5
+const PRO_TIER_RUNS_PER_DAY = 20
 
-/**
- * Checks whether an organization has exceeded their free-tier run quota.
- * Pro orgs always pass. Free orgs are limited to FREE_TIER_RUN_LIMIT runs.
- */
+export const MAX_ROWS_PER_UPLOAD = 5_000
+export const MAX_ITEMS_PER_SYNC = 500
+
 export async function checkRunQuota(orgId: string): Promise<{ allowed: boolean; reason?: string }> {
   const admin = createAdminClient()
 
@@ -16,19 +17,37 @@ export async function checkRunQuota(orgId: string): Promise<{ allowed: boolean; 
     .single()
 
   if (!org) return { allowed: false, reason: 'Organization not found' }
+
+  const dailyLimit = org.plan === 'pro' ? PRO_TIER_RUNS_PER_DAY : FREE_TIER_RUNS_PER_DAY
+  const dayStart = new Date()
+  dayStart.setUTCHours(0, 0, 0, 0)
+
+  const { count: dailyCount } = await admin
+    .from('reprice_runs')
+    .select('id', { count: 'exact', head: true })
+    .eq('organization_id', orgId)
+    .gte('created_at', dayStart.toISOString())
+    .not('status', 'eq', 'failed')
+
+  if ((dailyCount ?? 0) >= dailyLimit) {
+    return {
+      allowed: false,
+      reason: `Daily run limit reached (${dailyLimit}/day). Try again tomorrow.`,
+    }
+  }
+
   if (org.plan === 'pro') return { allowed: true }
 
-  const { count } = await admin
+  const { count: totalCount } = await admin
     .from('reprice_runs')
     .select('id', { count: 'exact', head: true })
     .eq('organization_id', orgId)
     .not('status', 'eq', 'failed')
 
-  const used = count ?? 0
-  if (used >= FREE_TIER_RUN_LIMIT) {
+  if ((totalCount ?? 0) >= FREE_TIER_RUN_LIMIT) {
     return {
       allowed: false,
-      reason: `Free plan limit reached (${FREE_TIER_RUN_LIMIT} runs). Upgrade to Pro for unlimited runs.`,
+      reason: `Free plan limit reached (${FREE_TIER_RUN_LIMIT} runs total). Upgrade to Pro for unlimited runs.`,
     }
   }
 

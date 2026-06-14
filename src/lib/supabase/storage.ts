@@ -16,7 +16,10 @@ export async function uploadSupplierFile(
   mimeType: string
 ): Promise<string> {
   const supabase = createAdminClient()
-  const storagePath = `${orgId}/${runId}/${filename}`
+  // Sanitize filename to prevent path traversal — keep only safe characters
+  const ext = filename.split('.').pop()?.replace(/[^a-z]/gi, '').slice(0, 5) ?? 'csv'
+  const safeFilename = `upload.${ext}`
+  const storagePath = `${orgId}/${runId}/${safeFilename}`
 
   const { error } = await supabase.storage
     .from(BUCKET)

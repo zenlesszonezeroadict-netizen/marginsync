@@ -64,16 +64,13 @@ export default function NotificationsPage() {
     setIsTesting(true)
     setTestResult(null)
     try {
-      const res = await fetch(webhookUrl, {
+      const res = await fetch('/api/settings/notifications/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'test',
-          message: 'MarginSync webhook test — if you see this it is working.',
-          timestamp: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ url: webhookUrl }),
       })
-      setTestResult(res.ok ? 'ok' : 'fail')
+      const data = (await res.json()) as { ok?: boolean; error?: string }
+      setTestResult(res.ok && data.ok ? 'ok' : 'fail')
     } catch {
       setTestResult('fail')
     } finally {

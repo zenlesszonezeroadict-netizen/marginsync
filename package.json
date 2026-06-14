@@ -13,19 +13,21 @@
     "test:smoke": "node scripts/run-smoke-tests.js",
     "preflight": "node scripts/preflight.js",
     "deploy:verify": "TARGET_URL=https://marginsync-wheat.vercel.app node scripts/run-smoke-tests.js",
-    "deploy:verify:env": "node scripts/verify-env.js"
+    "deploy:verify:env": "node scripts/verify-env.js",
+    "outreach": "node scripts/outreach/bot.js"
   },
   "dependencies": {
     "@shopify/shopify-api": "^13.0.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
+    "exceljs": "^4.4.0",
     "fuse.js": "^7.4.2",
     "next": "16.2.7",
     "papaparse": "^5.5.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -36,6 +38,9 @@
     "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "imapflow": "^1.4.0",
+    "instagram-private-api": "^1.46.1",
+    "nodemailer": "^8.0.11",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.8"

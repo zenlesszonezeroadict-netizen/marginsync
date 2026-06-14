@@ -1,30 +1,30 @@
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 import type { ParsedRow } from './types'
 
-/**
- * Parse an XLSX (or XLS) buffer into ParsedRow[].
- * Reads the first non-empty sheet.
- * All cell values are coerced to strings.
- */
-export function parseXlsx(buffer: Buffer): ParsedRow[] {
-  const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: false })
+export async function parseXlsx(buffer: Buffer): Promise<ParsedRow[]> {
+  const workbook = new ExcelJS.Workbook()
+  await workbook.xlsx.load(buffer.buffer as ArrayBuffer)
 
-  const sheetName = workbook.SheetNames[0]
-  if (!sheetName) return []
-
-  const sheet = workbook.Sheets[sheetName]
+  const sheet = workbook.worksheets[0]
   if (!sheet) return []
 
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
-    defval: '',
-    raw: false,
+  const rows: ParsedRow[] = []
+  let headers: string[] = []
+
+  sheet.eachRow((row, rowNumber) => {
+    const values = (row.values as (ExcelJS.CellValue | null)[]).slice(1) // index 0 is unused
+
+    if (rowNumber === 1) {
+      headers = values.map((v) => String(v ?? '').trim())
+      return
+    }
+
+    const parsed: ParsedRow = {}
+    headers.forEach((header, i) => {
+      if (header) parsed[header] = String(values[i] ?? '').trim()
+    })
+    rows.push(parsed)
   })
 
-  return rows.map((row) => {
-    const normalized: ParsedRow = {}
-    for (const [key, val] of Object.entries(row)) {
-      normalized[key.trim()] = String(val ?? '').trim()
-    }
-    return normalized
-  })
+  return rows
 }

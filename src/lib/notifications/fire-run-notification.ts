@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { isSafeWebhookHost } from '@/lib/webhook/safe-host'
 
 interface NotificationSettings {
   notifyOnComplete?: boolean
@@ -42,6 +43,13 @@ export async function fireRunNotification({
 
   const settings = (org?.notification_settings ?? {}) as NotificationSettings
   if (!settings.webhookUrl) return
+
+  try {
+    const parsed = new URL(settings.webhookUrl)
+    if (parsed.protocol !== 'https:' || !isSafeWebhookHost(parsed.hostname)) return
+  } catch {
+    return
+  }
 
   const marginAlertTriggered =
     settings.notifyOnMarginAlert &&

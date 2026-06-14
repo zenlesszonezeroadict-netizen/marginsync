@@ -41,3 +41,15 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# outreach bot — contains credentials and personal data
+scripts/outreach/run.bat
+scripts/outreach/ig-session.json
+scripts/outreach/ig-conversations.json
+scripts/outreach/sent.json
+scripts/outreach/queue.json
+scripts/outreach/skipped.json
+scripts/outreach/optout.json
+scripts/outreach/form-seen.json
+scripts/outreach/daily-state.json
+scripts/outreach/run.log

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SignOutButton } from './SignOutButton'
+import { BETA_FREE_MODE } from '@/lib/billing/beta'
 
 interface SidebarProps {
   userEmail: string
@@ -139,9 +140,13 @@ export function Sidebar({ userEmail, orgName, plan }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Footer: upgrade nudge (free only) + user + sign out */}
+      {/* Footer: upgrade nudge (free only, and only once beta ends) + user + sign out */}
       <div className="px-4 py-4 border-t border-gray-100 space-y-3">
-        {plan !== 'pro' && (
+        {BETA_FREE_MODE ? (
+          <div className="block w-full text-center text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg py-2">
+            Free during beta ✓
+          </div>
+        ) : plan !== 'pro' && (
           <Link
             href="/dashboard/billing"
             className="block w-full text-center text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-lg py-2 hover:bg-indigo-100 transition-colors"
@@ -157,6 +162,12 @@ export function Sidebar({ userEmail, orgName, plan }: SidebarProps) {
             </span>
           )}
         </div>
+        <Link
+          href="/feedback"
+          className="block w-full text-center text-xs text-gray-400 hover:text-indigo-600 transition-colors"
+        >
+          Give feedback →
+        </Link>
         <SignOutButton />
       </div>
     </aside>

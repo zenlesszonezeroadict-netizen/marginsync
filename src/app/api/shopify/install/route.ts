@@ -6,6 +6,18 @@ import { randomBytes } from 'crypto'
 
 const SHOP_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com$/
 
+const ALLOWED_SCOPES = new Set([
+  'read_products', 'write_products', 'read_inventory', 'write_inventory',
+  'read_price_rules', 'write_price_rules', 'read_product_listings',
+])
+const DEFAULT_SCOPES = 'read_products,write_products,read_inventory'
+
+function sanitiseScopes(raw: string): string {
+  const parts = raw.split(',').map(s => s.trim()).filter(Boolean)
+  const valid = parts.filter(s => ALLOWED_SCOPES.has(s))
+  return valid.length > 0 ? valid.join(',') : DEFAULT_SCOPES
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -17,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   const apiKey = process.env.SHOPIFY_CLIENT_ID ?? process.env.SHOPIFY_API_KEY
-  const scopes = process.env.SHOPIFY_SCOPES ?? 'read_products,write_products,read_inventory'
+  const scopes = sanitiseScopes(process.env.SHOPIFY_SCOPES ?? DEFAULT_SCOPES)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   if (!apiKey) {

@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { writePricesToShopify } from '@/lib/shopify/write-prices'
 import { fireRunNotification } from '@/lib/notifications/fire-run-notification'
+import { MAX_ITEMS_PER_SYNC } from '@/lib/billing/quota'
+import { BETA_FREE_MODE } from '@/lib/billing/beta'
 
 export async function POST(
   request: NextRequest,
@@ -23,6 +25,20 @@ export async function POST(
 
   const orgId = membership.organization_id
   const admin = createAdminClient()
+
+  const { data: org } = await admin
+    .from('organizations')
+    .select('plan')
+    .eq('id', orgId)
+    .single()
+
+  // During beta everything is free — only enforce the Pro paywall once beta ends.
+  if (!BETA_FREE_MODE && org?.plan !== 'pro') {
+    return NextResponse.json(
+      { error: 'Syncing prices to Shopify requires MarginSync Pro. Upgrade from the Billing page.' },
+      { status: 402 }
+    )
+  }
 
   // ── Parse chunk params (optional — omit for legacy all-at-once mode) ───────
   let body: { chunkSize?: number; offset?: number; isFinal?: boolean } = {}
@@ -95,6 +111,13 @@ export async function POST(
     .eq('selected', true)
     .not('shopify_variant_id', 'is', null)
     .not('new_price', 'is', null)
+
+  if ((totalSelected ?? 0) > MAX_ITEMS_PER_SYNC) {
+    return NextResponse.json(
+      { error: `Sync is limited to ${MAX_ITEMS_PER_SYNC} items per run. This run has ${totalSelected} selected items. Deselect some items and try again.` },
+      { status: 413 }
+    )
+  }
 
   // ── Fetch items for this chunk (stable ORDER BY id for correct pagination) ─
   const baseQuery = admin
@@ -178,11 +201,8 @@ export async function POST(
   }
 
   // ── Decide whether to finalize the run status ──────────────────────────────
-  // Finalize when:
-  //   • Legacy mode (not chunked)
-  //   • Client explicitly signals last chunk (isFinal)
-  //   • Server detects last chunk (fetched fewer items than requested)
-  const isLastChunk = !isChunked || clientFinal || items.length < chunkSize!
+  // Determined server-side only — never trust client isFinal flag
+  const isLastChunk = !isChunked || items.length < chunkSize! || (offset + items.length) >= (totalSelected ?? 0)
 
   type RunStatus = 'pending' | 'parsed' | 'previewed' | 'syncing' | 'completed' | 'failed'
   let finalStatus: RunStatus = 'syncing'

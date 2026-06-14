@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { encryptToken } from '@/lib/crypto/token'
+import { syncCatalog } from '@/lib/shopify/sync-catalog'
 
 const SHOP_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9-]*\.myshopify\.com$/
 
@@ -53,6 +54,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${appUrl}/dashboard/shopify?error=invalid_hmac`)
   }
 
+  // Verify the user is authenticated BEFORE burning the one-time OAuth code
+  const supabase = await createClient()
+  const { data: { user: preUser } } = await supabase.auth.getUser()
+  if (!preUser) return NextResponse.redirect(`${appUrl}/login`)
+
   // Exchange code for permanent access token
   const apiKey = process.env.SHOPIFY_CLIENT_ID ?? process.env.SHOPIFY_API_KEY
   let accessToken: string
@@ -75,8 +81,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${appUrl}/dashboard/shopify?error=token_exchange_failed`)
   }
 
-  // Verify the user is authenticated
-  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.redirect(`${appUrl}/login`)
 
@@ -106,6 +110,13 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     return NextResponse.redirect(`${appUrl}/dashboard/shopify?error=db_error`)
+  }
+
+  // Sync the store's product catalog into sku_mappings so runs can match real variants
+  try {
+    await syncCatalog(membership.organization_id, shop, encryptedToken)
+  } catch {
+    // Non-fatal — user can re-sync from Settings if needed
   }
 
   // Register APP_SUBSCRIPTIONS_UPDATE webhook so billing status stays in sync

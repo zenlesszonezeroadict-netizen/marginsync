@@ -19,15 +19,14 @@ export async function middleware(request: NextRequest) {
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Only extend the session token itself; PKCE verifier cookies must stay short-lived
+            const isSessionToken = name.endsWith('-auth-token')
             supabaseResponse.cookies.set(name, value, {
               ...options,
-              // Persist auth cookies for 30 days so standalone browser users
-              // stay logged in across browser restarts. Falls back to the value
-              // Supabase already set (e.g. short-lived PKCE state cookies).
-              maxAge: options.maxAge ?? SESSION_MAX_AGE,
+              maxAge: isSessionToken ? (options.maxAge ?? SESSION_MAX_AGE) : options.maxAge,
             })
-          )
+          })
         },
       },
     }

@@ -11,9 +11,7 @@ const REQUIRED_ENV_KEYS = [
 ]
 
 export async function GET(request: NextRequest) {
-  const secret =
-    request.headers.get('x-health-secret') ??
-    request.nextUrl.searchParams.get('secret')
+  const secret = request.headers.get('x-health-secret')
 
   if (!secret || secret !== process.env.INTERNAL_HEALTH_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -42,13 +40,9 @@ export async function GET(request: NextRequest) {
       },
       { status: envLoaded ? 200 : 500 }
     )
-  } catch (err) {
+  } catch {
     return NextResponse.json(
-      {
-        status: 'unhealthy',
-        timestamp,
-        error: err instanceof Error ? err.message : 'Unknown error',
-      },
+      { status: 'unhealthy', timestamp },
       { status: 500 }
     )
   }
