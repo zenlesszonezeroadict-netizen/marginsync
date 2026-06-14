@@ -53,3 +53,10 @@ scripts/outreach/optout.json
 scripts/outreach/form-seen.json
 scripts/outreach/daily-state.json
 scripts/outreach/run.log
+
+# Video auto-editor: keep the tool, ignore the user's clips / output / work
+scripts/video/raw/
+scripts/video/output/
+scripts/video/music/
+scripts/video/.work/
+scripts/video/captions.srt

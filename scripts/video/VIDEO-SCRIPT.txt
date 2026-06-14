@@ -1,0 +1,80 @@
+============================================================
+ MarginSync — video script & recording structure
+============================================================
+Format: vertical (9:16). Length: 25-40 seconds. Record each
+CLIP separately on your phone, in portrait.
+
+Why this structure: short-form algorithms in 2026 reward
+watch-time. They decide whether to push your video based on
+the first 1-3 seconds, and reward videos people finish
+(~70% completion is the goal). So we hook hard, show proof
+fast, and end with a clear ask. Structure = HOOK > BUILD > PAYOFF.
+
+------------------------------------------------------------
+ CLIP 1 — THE HOOK   (0-3 seconds)   << most important
+------------------------------------------------------------
+Say it straight to camera, fast, no intro:
+
+  "I'm 14 and I built a Shopify app with zero coding
+   experience. Here's what it does."
+
+Alternatives (test different ones across videos):
+  - "A 14-year-old built this Shopify tool. Watch."
+  - "Store owners are wasting 3 hours a week on this. I
+     fixed it at 14 with no coding background."
+
+RULES:
+  - No "Hey guys, welcome back." You have 2 seconds. Use them.
+  - Make a bold, specific claim. Numbers help ("14", "3 hours").
+  - Show your face for the hook. Faces hold attention.
+
+------------------------------------------------------------
+ CLIP 2 — THE BUILD / PROOF   (3-30 seconds)
+------------------------------------------------------------
+Screen-record MarginSync actually working while you talk
+over it. Show the OUTCOME, not a feature tour:
+
+  "If your supplier sends you a price list, you used to
+   update every product by hand. With MarginSync you upload
+   the file, it matches your products, shows you exactly
+   what changes BEFORE anything goes live, and you apply it
+   in one click. If something's wrong, one click undoes it."
+
+WHAT TO SHOW ON SCREEN (in this order):
+  1. The supplier CSV file
+  2. Uploading it into MarginSync
+  3. The preview screen with the price changes
+  4. Clicking sync / the success state
+
+Keep it moving. Cut any dead air. 20-25 seconds max here.
+
+------------------------------------------------------------
+ CLIP 3 — THE PAYOFF / CTA   (last 3-6 seconds)
+------------------------------------------------------------
+Back to your face:
+
+  "It's completely free while it's in beta. Comment 'price'
+   and I'll send you the link."
+
+Why "comment a word": comments tell the algorithm people are
+engaging, which pushes the video to more people. Replying to
+each comment with the link boosts it even more.
+
+Alternative CTA:
+  - "Link's in my bio — it's free right now."
+
+------------------------------------------------------------
+ IMPORTANT — what NOT to say
+------------------------------------------------------------
+Do NOT mention the cold-email outreach bot. Talking publicly
+about sending automated cold emails makes the business look
+like spam and can attract the wrong attention. The video is
+about the PRODUCT and your story, nothing else.
+
+------------------------------------------------------------
+ After recording
+------------------------------------------------------------
+Name the clips 01_hook.mp4 / 02_demo.mp4 / 03_cta.mp4, drop
+them in the  raw  folder, and run make-video.bat.
+Post the result to TikTok, Reels, and Shorts the same day.
+============================================================
