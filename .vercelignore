@@ -1,0 +1,6 @@
+# Not part of the deployed web app. Critically, scripts/ holds the outreach
+# bot's run.bat (Gmail/IG credentials) and its contact data (PII) — these must
+# never be uploaded to Vercel. The video tooling lives here too and isn't needed.
+scripts
+test-prices.csv
+*.log
