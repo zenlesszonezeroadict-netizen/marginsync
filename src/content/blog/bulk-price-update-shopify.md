@@ -1,57 +1,57 @@
 ---
 title: "Bulk Price Update in Shopify: Every Method (and Their Limits)"
 slug: "bulk-price-update-shopify"
-description: "A practical guide to bulk price updates in Shopify — the native bulk editor, CSV import, their real limitations, and how to preview and roll back changes safely."
+description: "A practical guide to bulk price updates in Shopify: the native bulk editor, CSV import, their real limits, and how to preview and roll back changes safely."
 date: "2026-06-14"
 ---
 
 # Bulk Price Update in Shopify: Every Method (and Their Limits)
 
-A supplier raises costs across a category. A season ends and you want to mark down 200 items. A bulk price update in Shopify *should* be a two-minute job — but the native tools each have a catch that can turn it into an afternoon of cleanup.
+A supplier bumps costs across a whole category. Or a season ends and you want 200 items marked down. A bulk price update in Shopify ought to be a two-minute job. The trouble is that each of the native tools has a catch, and any one of them can turn it into an afternoon of cleanup.
 
-Here's an honest rundown of every built-in way to change prices in bulk, what each one is actually good at, and where they leave you exposed.
+So here's a straight rundown of every built-in way to change prices in bulk, what each is genuinely good at, and where it leaves you exposed.
 
 ## Method 1: The bulk editor
 
-Shopify's bulk editor is the fastest native option for a handful of products.
+For a handful of products, the bulk editor is the fastest thing Shopify gives you.
 
-Go to **Products**, tick the items you want, then click **Edit products**. Add the **Price** column (and **Compare-at price** if you run sales), and you get a spreadsheet-style grid you can type straight into.
+Open **Products**, tick the items you want, and click **Edit products**. Add the **Price** column (and **Compare-at price** too, if you run sales) and you get a spreadsheet-style grid you can type straight into.
 
-**Good for:** quick, eyes-on changes to 5–50 products.
+Good for: quick, eyes-on changes to somewhere between 5 and 50 products.
 
-**The limits:**
-- You're still typing each price by hand — there's no "increase everything by 8%" button.
-- It caps out at a few hundred items before it becomes unwieldy.
-- No record of what the prices *were* before you changed them.
+Where it runs out:
+- You're still typing every price by hand. There's no "raise everything 8%" button.
+- Past a few hundred items it gets unwieldy fast.
+- It keeps no record of what the prices were before you touched them.
 
 ## Method 2: CSV export and import
 
-For larger catalogues, the CSV route scales further.
+For bigger catalogues, CSV scales further.
 
-Export via **Products → Export**, open the file, and edit the `Variant Price` column — often with a formula like `=old_price*1.08` for an across-the-board 8% rise. Then re-import under **Products → Import** with **Overwrite** enabled.
+Export through **Products > Export**, open the file, and edit the `Variant Price` column, usually with a formula like `=old_price*1.08` for a flat 8% rise. Then re-import under **Products > Import** with **Overwrite** turned on.
 
-**Good for:** large, formula-driven changes (percentage rises, rounding rules).
+Good for: large, formula-driven changes like percentage rises or rounding rules.
 
-**The limits:**
-- **No preview.** The import applies instantly. A formula error means wrong prices go live before you can check them.
-- **No rollback.** Unless you saved the pre-change CSV, there's no one-click undo.
-- **No cost awareness.** The export has your *retail* prices, not supplier *costs*, so margin-based repricing means importing supplier data separately and matching SKUs yourself.
+Where it runs out:
+- No preview. The import lands instantly, so a formula slip puts wrong prices live before you can check anything.
+- No rollback. Unless you saved the file from before, there's no undo.
+- No idea about cost. The export has your retail prices, not supplier costs, so anything margin-based means pulling in supplier data on the side and matching SKUs yourself.
 
 ## Method 3: Third-party apps
 
-Once you need previews, scheduling, cost-based logic, or supplier-file matching, you're into app territory. This is where the native tools genuinely run out of road — not because Shopify is bad, but because bulk repricing safely is a different job from editing a few products.
+The moment you need previews, scheduling, cost-based logic, or supplier-file matching, you've left what the native tools can do. That's not a knock on Shopify. Repricing safely in bulk is just a different job from editing a few products, and at some point a purpose-built tool wins.
 
-## The two things native tools don't give you
+## The two things the native tools never give you
 
-Across all the built-in methods, two gaps cause the most pain:
+Across all of the above, two gaps cause most of the pain:
 
-1. **A preview before you commit.** Seeing exactly which products change, and by how much, *before* it's live.
-2. **A clean rollback.** Undoing a bad batch in one click instead of restoring from a backup you hopefully remembered to make.
+1. A preview before you commit, so you can see which products change and by how much while it's still safe to back out.
+2. A clean rollback, so undoing a bad batch is one click instead of restoring from a backup you hopefully remembered to make.
 
 ## How MarginSync handles it
 
-[MarginSync](https://marginsync-wheat.vercel.app) is a Shopify app focused on safe bulk repricing from supplier files. You upload a supplier CSV or Excel file, it **auto-detects the SKU and cost columns**, matches them to your live catalogue, and shows a **full preview of every change before anything is applied**. Then it's **one click to apply and one click to roll back**, with every change logged.
+[MarginSync](https://marginsync-wheat.vercel.app) is a Shopify app built around safe bulk repricing from supplier files. You upload a supplier CSV or Excel file, it works out the SKU and cost columns, matches them to your live catalogue, and shows you every change before a single price moves. Applying is one click, rolling back is one click, and the whole thing is logged.
 
-It's built for merchants pricing from real supplier lists, and it's **currently free during beta**.
+It's made for merchants pricing from real supplier lists, and it's free while we're in beta.
 
-If your last bulk update involved a held breath and a prayer, the preview-and-rollback approach is worth trying: **[see how MarginSync works](https://marginsync-wheat.vercel.app)**.
+If your last bulk update involved holding your breath and hitting import, the preview-and-rollback approach is worth a try: **[see how MarginSync works](https://marginsync-wheat.vercel.app)**.

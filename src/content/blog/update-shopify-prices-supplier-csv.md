@@ -1,53 +1,53 @@
 ---
 title: "How to Update Shopify Prices From a Supplier CSV (2026 Guide)"
 slug: "update-shopify-prices-supplier-csv"
-description: "Learn how to update Shopify prices from a supplier CSV — the manual export/import method, common pitfalls, and a faster way to match SKUs and preview changes."
+description: "How to update Shopify prices from a supplier CSV: the manual export and import method, the mistakes that cause wrong prices, and a faster way to do it."
 date: "2026-06-14"
 ---
 
 # How to Update Shopify Prices From a Supplier CSV
 
-If your supplier sends you a spreadsheet of new costs every few weeks, you already know the drill: open the file, find the matching product in Shopify, type in the new price, repeat a few hundred times. It's slow, and one mistyped number can quietly eat your margin for a month.
+Every few weeks your supplier emails over a spreadsheet with new costs. So you open Shopify, find each product, type in the new price, and then do it again a few hundred more times. It's slow work, and it only takes one fat-fingered number to quietly wreck your margin on a product for a month before you catch it.
 
-This guide covers how to update Shopify prices from a supplier CSV properly — the genuine manual method first, the mistakes that cause incorrect prices, and a faster way to do it when the manual route stops scaling.
+So let's go through how to actually update Shopify prices from a supplier CSV. I'll start with the manual way, because it's free and it does work. Then I'll cover the parts that trip people up, and a quicker option for when the manual route stops being worth it.
 
-## The manual method: export, edit, re-import
+## The manual way: export, edit, re-import
 
-Shopify has a built-in CSV workflow. It's free and it works, but it expects *your* product CSV — not your supplier's. Here's the honest process.
+Shopify has a built-in CSV workflow. The catch is that it wants *your* product CSV, not the one your supplier sent. Here's how it actually goes.
 
-### 1. Export your product list
+### 1. Export your products
 
-Go to **Products** in your Shopify admin, click **Export**, and choose **All products** as a CSV. You'll get a file with one row per variant and columns including `Variant SKU`, `Variant Price`, and `Variant Compare At Price`.
+Open **Products** in your admin, click **Export**, and pick **All products** as CSV. You get one row per variant, with columns like `Variant SKU`, `Variant Price`, and `Variant Compare At Price`.
 
-### 2. Match supplier SKUs to your SKUs
+### 2. Line up the SKUs
 
-This is the part nobody warns you about. Your supplier's file has *their* SKUs and costs. Your Shopify export has *your* SKUs and retail prices. To update anything, you have to line the two up — usually with a VLOOKUP or an INDEX/MATCH in Excel or Google Sheets, keyed on the SKU column both files share.
+This is the step nobody warns you about. Your supplier's file has their SKUs and their costs. Your Shopify export has your SKUs and your retail prices. Before you can change a thing, you have to match the two, usually with a VLOOKUP or INDEX/MATCH in Excel or Google Sheets, keyed on the SKU column both files share.
 
-If your SKUs don't match exactly (extra spaces, different capitalisation, a supplier prefix), the lookup silently fails and those rows get skipped or filled wrong.
+And if the SKUs don't match exactly? A stray space, a different capitalisation, a supplier prefix tacked on the front? The lookup just fails on those rows without telling you, and they end up skipped or filled with the wrong number.
 
-### 3. Apply your markup
+### 3. Add your markup
 
-A supplier CSV gives you *cost*, not retail price. So you add a formula — say `cost × 1.6` for a 60% markup — to calculate the new `Variant Price`. Decide here whether you also want to update `Compare At Price` for sale displays.
+A supplier file gives you cost, not retail. So you write a formula, something like `cost * 1.6` for a 60% markup, to fill in the new `Variant Price`. This is also where you decide whether to touch `Compare At Price` for your sale displays.
 
-### 4. Re-import the edited CSV
+### 4. Re-import
 
-Back in **Products → Import**, upload your edited file and tick **Overwrite existing products**. Shopify matches rows by handle and updates the prices.
+Back in **Products > Import**, upload the edited file and tick **Overwrite existing products**. Shopify matches on the handle and updates your prices.
 
-## Where this goes wrong
+## Where it goes wrong
 
-The manual method breaks down in predictable ways:
+A few problems show up over and over:
 
-- **No preview.** Import overwrites immediately. If a formula referenced the wrong column, you find out *after* the wrong prices are live.
-- **No undo.** Shopify doesn't keep a one-click rollback of a bulk import. To revert, you need a backup of the *old* CSV — which people forget to save.
-- **SKU mismatches fail silently.** A handful of unmatched rows is easy to miss in a 500-row file.
-- **It's still hours of work** every time the supplier sends a new list.
+- The import goes live the second you confirm it. No preview. So if a formula pointed at the wrong column, you find out once the bad prices are already public.
+- There's no undo button. To roll back you need the old CSV saved somewhere, and that's exactly the file everyone forgets to keep.
+- Unmatched SKUs fail silently. Twenty bad rows hiding in a 500-row file are easy to miss.
+- It's still an hour or two of spreadsheet wrangling every time a new list lands.
 
-For a one-off change across a dozen products, the bulk editor (**Products → select items → Edit prices**) is faster than CSV gymnastics. But for a recurring supplier feed, neither native tool handles the SKU-matching or the safety net.
+For a quick change across a dozen products, just use the bulk editor instead (**Products**, select your items, **Edit prices**). It beats the whole CSV routine. But for a supplier feed you're handling on repeat, neither native tool does the SKU matching or gives you any kind of safety net.
 
-## A faster way: MarginSync
+## A faster option: MarginSync
 
-[MarginSync](https://marginsync-wheat.vercel.app) is a Shopify app built specifically for this recurring job. Instead of wrangling VLOOKUPs, you upload the supplier's CSV or Excel file as-is. It **auto-detects your SKU and cost columns**, matches them against your live Shopify catalogue, and shows you a **full preview of every price change before anything goes live**. If something looks wrong, it's **one click to apply and one click to roll back**, and every change is logged.
+[MarginSync](https://marginsync-wheat.vercel.app) is a Shopify app I built for this exact job. You upload the supplier's CSV or Excel file the way it arrived, no VLOOKUPs required. It works out which columns are your SKU and your cost, matches them to your live catalogue, and shows you every price change before any of it goes live. If a number looks off, applying or rolling back is one click either way, and it logs everything.
 
-It's built for merchants who price from real supplier files — not dropshippers — and it's currently **free during beta**.
+It's meant for merchants who price from real supplier files rather than dropshippers, and it's free while we're in beta.
 
-If you're spending an afternoon every month on supplier price updates, it's worth a look: **[try MarginSync free](https://marginsync-wheat.vercel.app)**.
+If you're losing an afternoon a month to this, it's worth a look: **[try MarginSync free](https://marginsync-wheat.vercel.app)**.
