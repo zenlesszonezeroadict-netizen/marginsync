@@ -36,6 +36,7 @@ const dns        = require('dns').promises;
 const fs         = require('fs');
 const path       = require('path');
 const { runInstagramPass, findHandleInHtml } = require('./instagram');
+const i18n = require('./i18n');
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -90,6 +91,16 @@ const APPS_TO_MINE = [
   { slug: 'shipbob',                     name: 'ShipBob' },
   { slug: 'shipstation',                 name: 'ShipStation' },
   { slug: 'easyship',                    name: 'Easyship' },
+  // CSV / bulk import apps — their unhappy users are exactly the manual-CSV crowd
+  { slug: 'excelify',                    name: 'Matrixify' },
+  { slug: 'ez-importer',                 name: 'EZ Importer' },
+  { slug: 'csv-importer',                name: 'CSV Importer' },
+  // B2B / wholesale apps — merchants with real supplier price lists
+  { slug: 'b2b-wholesale-solution',      name: 'BSS B2B Wholesale' },
+  { slug: 'wholesale-pricing-discount-b2b', name: 'Wholesale Pricing Discount' },
+  { slug: 'wholesale-gorilla',           name: 'Wholesale Gorilla' },
+  { slug: 'wholesale-club',              name: 'Wholesale Club' },
+  { slug: 'sparklayer-b2b-wholesale',    name: 'SparkLayer' },
 ];
 
 // Mine 1-, 2-, and 3-star reviews — all represent friction with the current tool
@@ -259,6 +270,9 @@ const SUPPLIER_SIGNALS = [
   'supplier', 'suppliers', 'wholesale', 'wholesaler', 'distributor',
   'manufacturer', 'brand partner', 'authorised dealer', 'authorized dealer',
   'stockist', 'importer', 'direct from', 'official retailer',
+  // Wholesale storefront tells — these pages/links signal real supplier buying
+  'trade account', 'trade enquiries', 'trade enquiry', 'reseller', 'b2b',
+  'bulk order', 'minimum order', 'price list', 'wholesale enquiries',
 ];
 
 const LONG_SHIP_RE = /(?:ships?|deliver(?:y|ies)?)[^.]{0,40}(?:1[4-9]|[2-9]\d)\s*(?:business\s*)?days?/i;
@@ -545,23 +559,9 @@ async function mineReviews(app) {
 // ── Email templates ───────────────────────────────────────────────────────────
 
 function buildSubject(store) {
-  // Short, lowercase-ish, no spam triggers, references their specific app. Varied
-  // deterministically by store so the same store always gets a stable subject.
-  const app = store.sourceApp;
-  const lines = [
-    `your ${app} review`,
-    `saw your note about ${app}`,
-    `re: your ${app} experience`,
-    `${app} → supplier price syncing`,
-    `quick one after your ${app} review`,
-  ];
-  return lines[Math.abs(hashCode(store.name)) % lines.length];
-}
-
-function hashCode(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
-  return h;
+  // Short, no spam triggers, references their specific app — localised to the
+  // language inferred from the reviewer's country.
+  return i18n.forCountry(store.country).subject(store.sourceApp);
 }
 
 // Pull a short, clean quote from their review to prove this is a real, read message.
@@ -574,40 +574,16 @@ function reviewQuote(store) {
 }
 
 function buildBody(store) {
-  const pain = store.painPoint || store.reviewText || '';
-  const quote = reviewQuote(store);
-
-  // First line is about THEM and tuned to the kind of pain they reported.
-  let opener;
-  if (/outage|blocked|lost.*sale|critical|down|broke|crash|glitch/i.test(pain)) {
-    opener = `I read your ${store.sourceApp} review — an app that breaks during live orders is exactly the kind of thing that shouldn't happen.`;
-  } else if (/bait|switch|trial|upgrade|charge|bill|refund|expensive|price|cost/i.test(pain)) {
-    opener = `I read your ${store.sourceApp} review — getting surprised on billing or pushed to upgrade before the thing even works is a pattern I kept hitting too.`;
-  } else if (/support|slow|no response|silent|ignore|unhelpful|customer service/i.test(pain)) {
-    opener = `I read your ${store.sourceApp} review — slow, go-nowhere support when something's broken is genuinely costly, not just annoying.`;
-  } else if (/sync|update|inventory|stock|integration/i.test(pain)) {
-    opener = `I read your ${store.sourceApp} review — sync that quietly stops doing its one job is the reason I started building an alternative.`;
-  } else {
-    opener = `I read your ${store.sourceApp} review and wanted to reach out directly — not a mass blast.`;
-  }
-
-  const quoteLine = quote ? `\nYou wrote: "${quote}"\n` : '';
-  const isGerman = /german|deutschland/i.test(store.country || '');
-
-  // Tight: ~4 short paragraphs, ONE call to action, no spam-trigger words
-  // ("free", "guarantee", "no credit card", "act now" all hurt deliverability).
-  return `Hi there,
-
-${opener}
-${quoteLine}
-I'm Hughez, founder of MarginSync. It's a Shopify app that automatically updates your product prices whenever your supplier sends a new CSV — no manual copy-pasting, no missed updates, no margin surprises.
-
-Takes about two minutes to set up. Free while we're in early access. If that sounds useful, just reply "yes" and I'll send you a private link.
-
-${isGerman ? 'Gerne auch auf Deutsch, falls das einfacher ist.\n\n' : ''}If this isn't relevant, reply STOP and I won't contact you again.
-
-Hughez
-Founder, MarginSync`;
+  // Conversation-first: one personal line about THEIR review, then a single
+  // question — no pitch, no link in the first touch. Fully localised to the
+  // language inferred from the reviewer's country (English fallback). The link
+  // and the pitch only go out once they reply (see checkRepliesAndFollowUp).
+  // No spam-trigger words ("free", "guarantee", "no credit card") in this first
+  // email — they hurt deliverability.
+  return i18n.forCountry(store.country).coldEmail({
+    app:   store.sourceApp,
+    quote: reviewQuote(store),
+  });
 }
 
 // ── Email sender ──────────────────────────────────────────────────────────────
@@ -777,21 +753,10 @@ async function checkFormResponses(transporter) {
 
           log(`  Form response from ${respondentEmail}${storeHint} — sending onboarding email...`);
 
-          const onboardingBody =
-`Hi ${respondentName},
-
-Thanks for signing up for the MarginSync beta — really glad you found it.
-
-Here's your direct link:
-
-  ${APP_URL}
-
-Sign in with your Shopify store and you can run your first supplier-price sync straight away. It takes about two minutes to set up.
-
-If anything looks off, or you want me to walk you through it personally, just reply here — I check this every day.
-
-Hughez
-Founder, MarginSync`;
+          // Form respondents don't carry a country, so this defaults to English.
+          // It still routes through forCountry so adding a language field to the
+          // form later (pass it here) is all it takes to localise onboarding too.
+          const onboardingBody = i18n.forCountry(null).formOnboarding(respondentName, APP_URL);
 
           try {
             await sendEmail(transporter, respondentEmail,
@@ -954,6 +919,9 @@ async function checkRepliesAndFollowUp(transporter) {
 
         const replySubject = subjectRaw.startsWith('Re:') ? subjectRaw : `Re: ${subjectRaw || entry.subject}`;
 
+        // Localise every reply to the language we inferred from their country.
+        const lang = i18n.forCountry(entry.country);
+
         // ── Opt-out: honor immediately, never contact again ───────────────────
         if (intent === 'optout') {
           addSuppressed(entry.email, entry.name, 'reply_optout');
@@ -961,7 +929,7 @@ async function checkRepliesAndFollowUp(transporter) {
           try {
             await sendEmail(transporter, entry.email,
               replySubject,
-              `No problem at all — I've removed you and won't email again.\n\nAll the best,\nHughez`,
+              lang.optoutAck(),
               { unsubscribe: false });
             incDailySent(1);
           } catch { /* non-fatal */ }
@@ -975,7 +943,7 @@ async function checkRepliesAndFollowUp(transporter) {
           try {
             await sendEmail(transporter, entry.email,
               replySubject,
-              `Totally understand — thanks for the reply, and best of luck with the store.\n\nHughez`,
+              lang.notInterestedAck(),
               { unsubscribe: false });
             incDailySent(1);
           } catch { /* non-fatal */ }
@@ -984,17 +952,7 @@ async function checkRepliesAndFollowUp(transporter) {
 
         // ── Interested / neutral: send the direct app link ────────────────────
         log(`  Reply from ${entry.email} (${entry.name}) [${intent}] — sending app link...`);
-        const replyBody =
-`Thanks for getting back to me — great to hear from you.
-
-Here's your direct link to MarginSync:
-
-  ${APP_URL}
-
-Sign in with your Shopify store and you can run your first supplier-price sync right away. If anything looks off or you have questions, just reply here and I'll help you personally.
-
-Hughez
-Founder, MarginSync`;
+        const replyBody = lang.replyLink(APP_URL);
 
         try {
           await sendEmail(transporter, entry.email, replySubject, replyBody, { unsubscribe: false });
@@ -1027,17 +985,7 @@ Founder, MarginSync`;
     if (sentTime > cutoff) continue;   // too soon
     if (sentTime < tooOld) continue;   // too old — they're not interested
 
-    const followUpBody =
-`Hi there,
-
-Just following up in case my last message got buried.
-
-MarginSync automates supplier price updates into Shopify — if you're still managing that manually, it might save you a few hours a week.
-
-Reply "yes" and I'll send you the link directly.
-
-Hughez
-Founder, MarginSync`;
+    const followUpBody = i18n.forCountry(s.country).followUp();
 
     try {
       await sendEmail(transporter, s.email, `Re: ${s.subject}`, followUpBody);

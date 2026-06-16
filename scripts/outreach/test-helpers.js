@@ -4,6 +4,7 @@
 'use strict';
 
 const h = require('./bot.js');
+const i18n = require('./i18n.js');
 
 let pass = 0, fail = 0;
 function eq(actual, expected, msg) {
@@ -69,21 +70,47 @@ ok(h.reviewQuote({ reviewText: 'short note' }) === 'short note', 'quote: short k
 ok(h.reviewQuote({ reviewText: 'x'.repeat(200) }).endsWith('…'), 'quote: long truncated with ellipsis');
 eq(h.reviewQuote({}), '', 'quote: empty when no text');
 
-// ── buildSubject / buildBody ──────────────────────────────────────────────────
+// ── detectLanguage ────────────────────────────────────────────────────────────
+eq(i18n.detectLanguage('United States'), 'en', 'lang: US → en');
+eq(i18n.detectLanguage('Indonesia'), 'id', 'lang: Indonesia → id');
+eq(i18n.detectLanguage('Germany'), 'de', 'lang: Germany → de');
+eq(i18n.detectLanguage('Mexico'), 'es', 'lang: Mexico → es');
+eq(i18n.detectLanguage('Brazil'), 'pt', 'lang: Brazil → pt');
+eq(i18n.detectLanguage(''), 'en', 'lang: empty → en');
+eq(i18n.detectLanguage('Narnia'), 'en', 'lang: unknown → en');
+
+// ── buildSubject / buildBody (English, question-first, no pitch) ───────────────
 const store = { name: 'Acme Co', sourceApp: 'Stock Sync', country: 'United States', reviewText: 'It kept losing sync and support never replied for weeks' };
 const subj = h.buildSubject(store);
 ok(typeof subj === 'string' && subj.length > 0, 'subject: non-empty');
 ok(/stock sync/i.test(subj), 'subject: references source app');
 const body = h.buildBody(store);
-ok(body.includes('Acme Co'), 'body: includes store name');
+ok(/Stock Sync/.test(body), 'body: references their app');
+ok(/supplier prices into Shopify by hand/i.test(body), 'body: asks the one question');
 ok(body.includes('reply STOP'), 'body: includes opt-out line');
 ok(!/marginsync-wheat\.vercel\.app/.test(body), 'body: does NOT leak app link in first email');
 ok(!/\bfree\b/i.test(body), 'body: avoids spam-trigger word "free"');
 ok(!/no credit card/i.test(body), 'body: avoids "no credit card" trigger');
 ok(body.includes('You wrote:'), 'body: quotes their review');
-// German PS only for German stores
-ok(!/auf Deutsch/.test(body), 'body: no German PS for US store');
-ok(/auf Deutsch/.test(h.buildBody({ ...store, country: 'Germany' })), 'body: German PS for German store');
+
+// ── buildBody localisation (whole email switches language by country) ──────────
+const idBody = h.buildBody({ ...store, country: 'Indonesia' });
+ok(/^Halo,/.test(idBody), 'body(id): Indonesian greeting');
+ok(/harga supplier ke Shopify secara manual/.test(idBody), 'body(id): localised question');
+ok(/Anda menulis:/.test(idBody), 'body(id): localised quote label');
+ok(!/marginsync-wheat\.vercel\.app/.test(idBody), 'body(id): no link in first email');
+
+const deBody = h.buildBody({ ...store, country: 'Germany' });
+ok(/^Hallo,/.test(deBody), 'body(de): German greeting');
+ok(/Lieferantenpreise von Hand/.test(deBody), 'body(de): localised question');
+
+const esBody = h.buildBody({ ...store, country: 'Spain' });
+ok(/^Hola,/.test(esBody), 'body(es): Spanish greeting');
+
+// Localised reply / follow-up / onboarding must never be empty and stay link-correct
+ok(i18n.forCountry('Indonesia').replyLink('https://x').includes('https://x'), 'replyLink(id): carries the link');
+ok(i18n.forCountry('Germany').followUp().length > 0, 'followUp(de): non-empty');
+ok(i18n.forCountry('Brazil').formOnboarding('Ana', 'https://x').includes('Ana'), 'onboarding(pt): uses name');
 
 // ── todayStr ──────────────────────────────────────────────────────────────────
 ok(/^\d{4}-\d{2}-\d{2}$/.test(h.todayStr()), 'todayStr: YYYY-MM-DD format');

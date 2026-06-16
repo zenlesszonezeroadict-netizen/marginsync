@@ -17,6 +17,7 @@
 // or Instagram credentials are not configured.
 const fs   = require('fs');
 const path = require('path');
+const i18n = require('./i18n');
 
 const CONVO_FILE    = path.join(__dirname, 'ig-conversations.json');
 const SESSION_FILE  = path.join(__dirname, 'ig-session.json');
@@ -144,29 +145,11 @@ function findHandleInHtml(html) {
 
 function buildOpener(store) {
   const country = store.country || '';
-  const name    = store.name   || 'there';
-
-  // Infer product category from store name or sourceApp context
-  // The bot will populate store.productHint when scraping the site description
+  const name    = store.name    || 'there';
+  // productHint is populated when the bot scrapes the store's site description.
   const product = store.productHint || 'products';
-
-  const locationLine = country ? ` in ${country}` : '';
-
-  // Rotate openers slightly so threads don't all read identically
-  const templates = [
-    `Hi ${name}! Love your ${product} store${locationLine} — the range you carry looks really solid.`,
-    `Hi ${name}! Just came across your store${locationLine} — impressive selection of ${product}.`,
-    `Hey ${name}! Your ${product} store${locationLine} caught my eye — great work on the catalogue.`,
-  ];
-
-  const idx = Math.abs(hashCode(name)) % templates.length;
-  return templates[idx];
-}
-
-function hashCode(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return h;
+  // Localised to the language inferred from the store's country (English fallback).
+  return i18n.forCountry(country).igOpener(name, product, country);
 }
 
 // ── Reply classifier ──────────────────────────────────────────────────────────
@@ -184,32 +167,18 @@ function classifyReply(text) {
 
 function buildResponse(stage, theirReply, store) {
   const sentiment = classifyReply(theirReply);
-  const name = store.name || '';
+  const t = i18n.forCountry(store.country);  // localise by the store's country
 
   if (sentiment === 'negative') return null; // Stop the thread
 
-  if (stage === STAGE.OPENER_SENT) {
-    // They replied to our opener — ask a genuine question to keep it going
-    const questions = [
-      `Of course! Quick question — how do you currently handle pricing when your suppliers send updated price lists? I know a lot of Shopify store owners find that surprisingly time-consuming.`,
-      `Appreciate it! How long have you been running the store? I'm always curious how independent shops manage stock and pricing updates across multiple suppliers.`,
-      `Thanks for replying! Do you work with supplier CSVs for pricing, or do you update prices manually in Shopify? Just curious — it comes up a lot with store owners.`,
-    ];
-    return questions[Math.abs(hashCode(theirReply)) % questions.length];
-  }
+  // They replied to our opener — ask the single supplier-pricing question.
+  if (stage === STAGE.OPENER_SENT) return t.igQuestion();
 
-  if (stage === STAGE.ENGAGED) {
-    // They answered our question — introduce MarginSync naturally
-    return `That makes a lot of sense. We actually built a tool called MarginSync specifically for this — you upload your supplier's CSV and it maps the prices to your Shopify products automatically. It shows you a full preview before anything goes live, so there are no surprise changes. It's completely free right now while we're in beta. Worth trying?`;
-  }
+  // They engaged with the question — introduce MarginSync naturally.
+  if (stage === STAGE.ENGAGED) return t.igPitch();
 
-  if (stage === STAGE.PITCHED) {
-    if (sentiment === 'positive' || sentiment === 'question') {
-      return `Here's the link — it takes about five minutes to connect and the first sync is usually eye-opening:\n${BETA_FORM_URL}\n\nFeel free to message me if you run into anything.`;
-    }
-    // Neutral — give them one more nudge
-    return `No pressure at all! If you ever deal with supplier price lists and want an easier way to push them to Shopify, the link is here whenever you want it: ${BETA_FORM_URL}`;
-  }
+  // We've pitched — send the link (low pressure on neutral, the same link).
+  if (stage === STAGE.PITCHED) return t.igLink(BETA_FORM_URL);
 
   return null;
 }
@@ -242,6 +211,7 @@ async function sendOpener(ig, store) {
 
     convos[key] = {
       storeName      : store.name,
+      country        : store.country || '',
       handle         : key,
       userId         : `${userInfo.pk}`,
       stage          : STAGE.OPENER_SENT,
@@ -323,7 +293,7 @@ async function checkAndRespond(ig) {
       continue;
     }
 
-    const reply = buildResponse(convo.stage, latestText, { name: convo.storeName });
+    const reply = buildResponse(convo.stage, latestText, { name: convo.storeName, country: convo.country });
     if (!reply) continue;
 
     // Advance stage before sending
